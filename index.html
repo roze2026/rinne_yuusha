@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#111827">
+  <title>輪廻勇者の一生</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #111827, #1f2937);
+      color: #f3f4f6;
+      touch-action: manipulation;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .title-screen {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .title-left {
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #fbbf24;
+      font-size: 32px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat-box {
+      min-width: 140px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-label {
+      margin-bottom: 8px;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .stat-value {
+      color: #fbbf24;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .title-right {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 18px 50px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #111827;
+      font-size: 20px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f3f4f6;
+      box-shadow: none;
+    }
+
+    .info-text {
+      margin-top: 20px;
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .game-screen {
+      flex-direction: row;
+      gap: 15px;
+      padding: 15px;
+    }
+
+    .game-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 180px;
+      flex-shrink: 0;
+    }
+
+    .game-stats {
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+    }
+
+    .game-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .game-stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .game-stat-label {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .game-stat-value {
+      color: #fbbf24;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .game-area {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      background: linear-gradient(180deg, #3b82f6, #1e40af);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .cloud {
+      position: absolute;
+      font-size: 35px;
+      opacity: 0.8;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .character {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      font-size: 50px;
+    }
+
+    .enemy {
+      position: absolute;
+      right: 30px;
+      bottom: 30px;
+      font-size: 45px;
+    }
+
+    .hp-bar {
+      position: absolute;
+      bottom: 80px;
+      width: 70px;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .hp-fill {
+      height: 100%;
+      background: #ef4444;
+      transition: width 0.2s;
+    }
+
+    .game-footer {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 180px;
+      padding: 15px;
+      flex-shrink: 0;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+    }
+
+    .timer-box {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .timer-label {
+      margin-bottom: 8px;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .timer-bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #fbbf24, #f59e0b);
+      transition: width 1s linear;
+    }
+
+    .timer-value {
+      margin-top: 8px;
+      color: #fbbf24;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .battle-log {
+      min-height: 40px;
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .result-screen {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .result-icon {
+      font-size: 80px;
+    }
+
+    .result-content {
+      text-align: center;
+    }
+
+    .result-title {
+      margin-bottom: 30px;
+      font-size: 36px;
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .result-row {
+      display: flex;
+      flex-direction: column;
+      min-width: 140px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+
+    .result-label {
+      margin-bottom: 8px;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .result-value {
+      color: #fbbf24;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .rotate-message {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      padding: 40px;
+      background: rgba(17, 24, 39, 0.95);
+      text-align: center;
+    }
+
+    .rotate-message.active {
+      display: flex;
+    }
+
+    .rotate-icon {
+      margin-bottom: 20px;
+      font-size: 60px;
+      animation: rotateIcon 2s infinite;
+    }
+
+    @keyframes rotateIcon {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+
+      25% {
+        transform: rotate(90deg);
+      }
+
+      50% {
+        transform: rotate(180deg);
+      }
+
+      75% {
+        transform: rotate(270deg);
+      }
+    }
+
+    .rotate-text {
+      margin-bottom: 10px;
+      color: #fbbf24;
+      font-size: 20px;
+    }
+
+    .rotate-sub {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    @media (orientation: portrait) {
+      .rotate-message {
+        display: flex;
+      }
+
+      .title-screen,
+      .game-screen,
+      .result-screen {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .title-screen {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .stat-box {
+        min-width: 120px;
+        padding: 15px;
+      }
+
+      .stat-value {
+        font-size: 24px;
+      }
+
+      .btn {
+        padding: 16px 40px;
+        font-size: 18px;
+      }
+
+      .game-screen {
+        flex-direction: column;
+      }
+
+      .game-sidebar,
+      .game-footer {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+
+      .game-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .game-stat-row {
+        padding: 5px 0;
+      }
+
+      .game-area {
+        height: 300px;
+        min-height: 200px;
+      }
+
+      .result-screen {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="rotate-message" id="rotateMessage">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-text">端末を横向きにしてください</div>
+    <div class="rotate-sub">このゲームは横画面専用です</div>
+  </div>
+
+  <div class="screen title-screen active" id="titleScreen">
+    <div class="title-left">
+      <h1>🔄 輪廻勇者の一生</h1>
+
+      <div class="stats">
+        <div class="stat-box">
+          <div class="stat-label">人生</div>
+          <div class="stat-value" id="displayLife">1</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-label">自己最高距離</div>
+          <div class="stat-value" id="displayBestDistance">0m</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-label">ジェム</div>
+          <div class="stat-value" id="displayGems">0</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-label">ゴールド</div>
+          <div class="stat-value" id="displayGold">0</div>
+        </div>
+      </div>
+
+      <div class="info-text">
+        30秒ステージ / 横スクロール / 自動戦闘<br>
+        70歳で人生終了 / 年齢と共に成長
+      </div>
+    </div>
+
+    <div class="title-right">
+      <button class="btn" id="startButton">冒険を始める</button>
+      <button class="btn btn-secondary" id="resetButton">データリセット</button>
+    </div>
+  </div>
+
+  <div class="screen game-screen" id="gameScreen">
+    <div class="game-sidebar">
+      <div class="game-stats">
+        <div class="game-stat-row">
+          <span class="game-stat-label">年齢</span>
+          <span class="game-stat-value" id="gameAge">20歳</span>
+        </div>
+
+        <div class="game-stat-row">
+          <span class="game-stat-label">Lv</span>
+          <span class="game-stat-value" id="gameLevel">1</span>
+        </div>
+
+        <div class="game-stat-row">
+          <span class="game-stat-label">ステージ</span>
+          <span class="game-stat-value" id="gameStage">1-1</span>
+        </div>
+
+        <div class="game-stat-row">
+          <span class="game-stat-label">距離</span>
+          <span class="game-stat-value" id="gameDistance">0m</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-area">
+      <div class="cloud" style="top: 30px; left: 20%;">☁️</div>
+      <div class="cloud" style="top: 60px; left: 60%; animation-delay: 1s;">☁️</div>
+
+      <div class="character">
+        🧑‍⚔️
+        <div class="hp-bar">
+          <div class="hp-fill" id="heroHpBar"></div>
+        </div>
+      </div>
+
+      <div class="enemy">
+        🧟
+        <div class="hp-bar">
+          <div class="hp-fill" id="enemyHpBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-footer">
+      <div class="timer-box">
+        <div class="timer-label">ステージ残り時間</div>
+
+        <div class="timer-bar">
+          <div class="timer-fill" id="timerBar"></div>
+        </div>
+
+        <div class="timer-value" id="timerValue">30秒</div>
+      </div>
+
+      <div class="battle-log" id="battleLog">
+        完全オート戦闘開始！
+      </div>
+    </div>
+  </div>
+
+  <div class="screen result-screen" id="resultScreen">
+    <div class="result-icon">💀</div>
+
+    <div class="result-content">
+      <div class="result-title">人生終了</div>
+
+      <div class="result-stats">
+        <div class="result-row">
+          <span class="result-label">到達ステージ</span>
+          <span class="result-value" id="resultStage">1-1</span>
+        </div>
+
+        <div class="result-row">
+          <span class="result-label">到達距離</span>
+          <span class="result-value" id="resultDistance">0m</span>
+        </div>
+
+        <div class="result-row">
+          <span class="result-label">獲得ゴールド</span>
+          <span class="result-value" id="resultGold">0</span>
+        </div>
+
+        <div class="result-row">
+          <span class="result-label">獲得ジェム</span>
+          <span class="result-value" id="resultGems">0</span>
+        </div>
+      </div>
+
+      <button class="btn" id="nextLifeButton">次の人生へ</button>
+    </div>
+  </div>
+
+  <script>
+    let gameState = {
+      life: 1,
+      bestDistance: 0,
+      gems: 0,
+      gold: 0
+    };
+
+    let currentPlay = {
+      age: 20,
+      level: 1,
+      stage: 1,
+      distance: 0,
+      stageTime: 30,
+      heroHp: 100,
+      heroMaxHp: 100,
+      enemyHp: 50,
+      enemyMaxHp: 50,
+      isPlaying: false,
+      intervalId: null
+    };
+
+    function init() {
+      loadGame();
+      updateTitleDisplay();
+      updateGameDisplay();
+      checkOrientation();
+
+      window.addEventListener('resize', checkOrientation);
+
+      window.addEventListener('orientationchange', function() {
+        setTimeout(checkOrientation, 300);
+      });
+
+      document.getElementById('startButton')
+        .addEventListener('click', startGame);
+
+      document.getElementById('resetButton')
+        .addEventListener('click', resetData);
+
+      document.getElementById('nextLifeButton')
+        .addEventListener('click', showTitle);
+    }
+
+    function checkOrientation() {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      const rotateMessage = document.getElementById('rotateMessage');
+
+      if (isPortrait) {
+        rotateMessage.classList.add('active');
+      } else {
+        rotateMessage.classList.remove('active');
+      }
+    }
+
+    function saveGame() {
+      try {
+        localStorage.setItem('rinneData', JSON.stringify(gameState));
+      } catch (error) {
+        console.log('保存エラー:', error);
+      }
+    }
+
+    function loadGame() {
+      try {
+        const saved = localStorage.getItem('rinneData');
+
+        if (saved) {
+          const data = JSON.parse(saved);
+
+          gameState = {
+            life: Number(data.life) || 1,
+            bestDistance: Number(data.bestDistance) || 0,
+            gems: Number(data.gems) || 0,
+            gold: Number(data.gold) || 0
+          };
+        }
+      } catch (error) {
+        console.log('読み込みエラー:', error);
+      }
+    }
+
+    function resetData() {
+      if (!window.confirm('すべてのデータをリセットしますか？')) {
+        return;
+      }
+
+      gameState = {
+        life: 1,
+        bestDistance: 0,
+        gems: 0,
+        gold: 0
+      };
+
+      saveGame();
+      updateTitleDisplay();
+    }
+
+    function updateTitleDisplay() {
+      document.getElementById('displayLife').textContent =
+        gameState.life;
+
+      document.getElementById('displayBestDistance').textContent =
+        gameState.bestDistance + 'm';
+
+      document.getElementById('displayGems').textContent =
+        gameState.gems;
+
+      document.getElementById('displayGold').textContent =
+        gameState.gold;
+    }
+
+    function startGame() {
+      stopGameLoop();
+
+      currentPlay = {
+        age: 20,
+        level: 1,
+        stage: 1,
+        distance: 0,
+        stageTime: 30,
+        heroHp: 100,
+        heroMaxHp: 100,
+        enemyHp: 50,
+        enemyMaxHp: 50,
+        isPlaying: true,
+        intervalId: null
+      };
+
+      switchScreen('gameScreen');
+      updateGameDisplay();
+      gameLoop();
+    }
+
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(function(screen) {
+        screen.classList.remove('active');
+      });
+
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function updateGameDisplay() {
+      document.getElementById('gameAge').textContent =
+        currentPlay.age + '歳';
+
+      document.getElementById('gameLevel').textContent =
+        currentPlay.level;
+
+      document.getElementById('gameStage').textContent =
+        '1-' + currentPlay.stage;
+
+      document.getElementById('gameDistance').textContent =
+        currentPlay.distance + 'm';
+
+      const heroHpPercent =
+        Math.max(
+          0,
+          currentPlay.heroHp / currentPlay.heroMaxHp * 100
+        );
+
+      const enemyHpPercent =
+        Math.max(
+          0,
+          currentPlay.enemyHp / currentPlay.enemyMaxHp * 100
+        );
+
+      document.getElementById('heroHpBar').style.width =
+        heroHpPercent + '%';
+
+      document.getElementById('enemyHpBar').style.width =
+        enemyHpPercent + '%';
+
+      document.getElementById('timerBar').style.width =
+        currentPlay.stageTime / 30 * 100 + '%';
+
+      document.getElementById('timerValue').textContent =
+        currentPlay.stageTime + '秒';
+    }
+
+    function gameLoop() {
+      currentPlay.intervalId = window.setInterval(function() {
+        if (!currentPlay.isPlaying) {
+          stopGameLoop();
+          return;
+        }
+
+        currentPlay.stageTime--;
+        currentPlay.distance += 10;
+
+        if (currentPlay.stageTime % 2 === 0) {
+          currentPlay.enemyHp -= 10;
+
+          if (currentPlay.enemyHp <= 0) {
+            currentPlay.enemyHp = currentPlay.enemyMaxHp;
+            currentPlay.stage++;
+            currentPlay.level++;
+
+            document.getElementById('battleLog').textContent =
+              '敵を倒した！レベルアップ！';
+          } else {
+            document.getElementById('battleLog').textContent =
+              '勇者が敵を攻撃中！';
+          }
+
+          currentPlay.heroHp -= 5;
+
+          if (currentPlay.heroHp <= 0) {
+            currentPlay.heroHp = 0;
+            updateGameDisplay();
+            endGame();
+            return;
+          }
+        }
+
+        if (currentPlay.stageTime <= 0) {
+          currentPlay.stageTime = 30;
+
+          if (currentPlay.age < 70) {
+            currentPlay.age++;
+            currentPlay.heroMaxHp += 10;
+
+            /*
+             * ここではHPを回復しない。
+             * 現在HPはそのまま維持する。
+             */
+          }
+        }
+
+        if (currentPlay.age >= 70) {
+          endGame();
+          return;
+        }
+
+        updateGameDisplay();
+      }, 1000);
+    }
+
+    function stopGameLoop() {
+      if (currentPlay.intervalId !== null) {
+        window.clearInterval(currentPlay.intervalId);
+        currentPlay.intervalId = null;
+      }
+    }
+
+    function endGame() {
+      if (!currentPlay.isPlaying) {
+        return;
+      }
+
+      currentPlay.isPlaying = false;
+      stopGameLoop();
+
+      gameState.life++;
+
+      if (currentPlay.distance > gameState.bestDistance) {
+        gameState.bestDistance = currentPlay.distance;
+      }
+
+      const earnedGold =
+        Math.floor(currentPlay.distance / 100);
+
+      const earnedGems =
+        Math.floor(currentPlay.stage / 5);
+
+      gameState.gold += earnedGold;
+      gameState.gems += earnedGems;
+
+      saveGame();
+
+      document.getElementById('resultStage').textContent =
+        '1-' + currentPlay.stage;
+
+      document.getElementById('resultDistance').textContent =
+        currentPlay.distance + 'm';
+
+      document.getElementById('resultGold').textContent =
+        earnedGold;
+
+      document.getElementById('resultGems').textContent =
+        earnedGems;
+
+      switchScreen('resultScreen');
+    }
+
+    function showTitle() {
+      updateTitleDisplay();
+      switchScreen('titleScreen');
+    }
+
+    init();
+  </script>
+</body>
+</html>
