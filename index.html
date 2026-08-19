@@ -5,450 +5,243 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#111827">
   <title>輪廻勇者の一生</title>
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --gold: #fbbf24; --text: #f8fafc; --muted: #cbd5e1; --panel: rgba(8, 15, 30, 0.96);
+      --panel-border: rgba(255, 255, 255, 0.28); --hero-hp: #22c55e; --enemy-hp: #ef4444;
+      --soul: #c084fc; --exp: #38bdf8; --skill: #a78bfa; --danger: #fb7185;
+      --pet: #f472b6; --gem: #06b6d4; --sr: #a855f7; --ssr: #f59e0b;
     }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(135deg, #111827, #1f2937);
-      color: #f3f4f6;
-      touch-action: manipulation;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    .screen {
-      display: none;
-      flex-direction: column;
-      width: 100vw;
-      height: 100vh;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    .title-screen {
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-    }
-
-    .title-left {
-      text-align: center;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-      color: #fbbf24;
-      font-size: 32px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin: 20px 0;
-    }
-
-    .stat-box {
-      min-width: 140px;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .stat-label {
-      margin-bottom: 8px;
-      color: #9ca3af;
-      font-size: 12px;
-    }
-
-    .stat-value {
-      color: #fbbf24;
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .title-right {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .btn {
-      padding: 18px 50px;
-      border: none;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #fbbf24, #f59e0b);
-      color: #111827;
-      font-size: 20px;
-      font-weight: bold;
-      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
-    }
-
-    .btn:active {
-      transform: scale(0.95);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: #f3f4f6;
-      box-shadow: none;
-    }
-
-    .info-text {
-      margin-top: 20px;
-      color: #9ca3af;
-      font-size: 13px;
-      line-height: 1.8;
-      text-align: center;
-    }
-
-    .game-screen {
-      flex-direction: row;
-      gap: 15px;
-      padding: 15px;
-    }
-
-    .game-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 180px;
-      flex-shrink: 0;
-    }
-
-    .game-stats {
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-    }
-
-    .game-stat-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .game-stat-row:last-child {
-      border-bottom: none;
-    }
-
-    .game-stat-label {
-      color: #9ca3af;
-      font-size: 12px;
-    }
-
-    .game-stat-value {
-      color: #fbbf24;
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .game-area {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-      background: linear-gradient(180deg, #3b82f6, #1e40af);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .cloud {
-      position: absolute;
-      font-size: 35px;
-      opacity: 0.8;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    .character {
-      position: absolute;
-      bottom: 30px;
-      left: 30px;
-      font-size: 50px;
-    }
-
-    .enemy {
-      position: absolute;
-      right: 30px;
-      bottom: 30px;
-      font-size: 45px;
-    }
-
-    .hp-bar {
-      position: absolute;
-      bottom: 80px;
-      width: 70px;
-      height: 10px;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .hp-fill {
-      height: 100%;
-      background: #ef4444;
-      transition: width 0.2s;
-    }
-
-    .game-footer {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      width: 180px;
-      padding: 15px;
-      flex-shrink: 0;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-    }
-
-    .timer-box {
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .timer-label {
-      margin-bottom: 8px;
-      color: #9ca3af;
-      font-size: 12px;
-    }
-
-    .timer-bar {
-      width: 100%;
-      height: 10px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .timer-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #fbbf24, #f59e0b);
-      transition: width 1s linear;
-    }
-
-    .timer-value {
-      margin-top: 8px;
-      color: #fbbf24;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .battle-log {
-      min-height: 40px;
-      color: #9ca3af;
-      font-size: 13px;
-      line-height: 1.6;
-      text-align: center;
-    }
-
-    .result-screen {
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-    }
-
-    .result-icon {
-      font-size: 80px;
-    }
-
-    .result-content {
-      text-align: center;
-    }
-
-    .result-title {
-      margin-bottom: 30px;
-      font-size: 36px;
-    }
-
-    .result-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    .result-row {
-      display: flex;
-      flex-direction: column;
-      min-width: 140px;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-    }
-
-    .result-label {
-      margin-bottom: 8px;
-      color: #9ca3af;
-      font-size: 12px;
-    }
-
-    .result-value {
-      color: #fbbf24;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .rotate-message {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      top: 0;
-      left: 0;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      width: 100vw;
-      height: 100vh;
-      padding: 40px;
-      background: rgba(17, 24, 39, 0.95);
-      text-align: center;
-    }
-
-    .rotate-message.active {
-      display: flex;
-    }
-
-    .rotate-icon {
-      margin-bottom: 20px;
-      font-size: 60px;
-      animation: rotateIcon 2s infinite;
-    }
-
-    @keyframes rotateIcon {
-      0%, 100% {
-        transform: rotate(0deg);
-      }
-
-      25% {
-        transform: rotate(90deg);
-      }
-
-      50% {
-        transform: rotate(180deg);
-      }
-
-      75% {
-        transform: rotate(270deg);
-      }
-    }
-
-    .rotate-text {
-      margin-bottom: 10px;
-      color: #fbbf24;
-      font-size: 20px;
-    }
-
-    .rotate-sub {
-      color: #9ca3af;
-      font-size: 14px;
-    }
-
-    @media (orientation: portrait) {
-      .rotate-message {
-        display: flex;
-      }
-
-      .title-screen,
-      .game-screen,
-      .result-screen {
-        display: none !important;
-      }
-    }
-
-    @media (max-width: 720px) {
-      .title-screen {
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      h1 {
-        font-size: 26px;
-      }
-
-      .stat-box {
-        min-width: 120px;
-        padding: 15px;
-      }
-
-      .stat-value {
-        font-size: 24px;
-      }
-
-      .btn {
-        padding: 16px 40px;
-        font-size: 18px;
-      }
-
-      .game-screen {
-        flex-direction: column;
-      }
-
-      .game-sidebar,
-      .game-footer {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-
-      .game-stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-
-      .game-stat-row {
-        padding: 5px 0;
-      }
-
-      .game-area {
-        height: 300px;
-        min-height: 200px;
-      }
-
-      .result-screen {
-        flex-direction: column;
-        gap: 20px;
-      }
-    }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body { background: #111827; color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; touch-action: manipulation; }
+    button { font: inherit; cursor: pointer; }
+    .screen { display: none; flex-direction: column; width: 100vw; height: 100vh; min-height: 0; padding: clamp(4px, 1vw, 12px); overflow: hidden; }
+    .screen.active { display: flex; }
+    .btn { min-height: 42px; padding: 9px 18px; border: none; border-radius: 11px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #111827; font-size: clamp(14px, 2vw, 18px); font-weight: 800; box-shadow: 0 4px 14px rgba(251, 191, 36, 0.3); }
+    .btn:active { transform: scale(0.96); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-secondary { background: #334155; color: var(--text); box-shadow: none; }
+    .btn-soul { background: linear-gradient(135deg, #c084fc, #7c3aed); color: #ffffff; box-shadow: 0 4px 14px rgba(192, 132, 252, 0.35); }
+    .btn-gem { background: linear-gradient(135deg, #06b6d4, #0891b2); color: #ffffff; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35); }
+    .btn-gacha { background: linear-gradient(135deg, #a855f7, #7c3aed); color: #ffffff; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35); }
+    .btn-equipment { background: linear-gradient(135deg, #22c55e, #16a34a); color: #ffffff; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); }
+    .title-screen { align-items: center; justify-content: center; gap: clamp(12px, 4vw, 40px); overflow-y: auto; }
+    .title-left { width: min(560px, 100%); text-align: center; }
+    h1 { margin-bottom: 12px; color: var(--gold); font-size: clamp(25px, 4vw, 36px); text-shadow: 0 2px 4px #000; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 12px 0; }
+    .stat-box { padding: 10px; border: 1px solid var(--panel-border); border-radius: 10px; background: var(--panel); text-align: center; }
+    .stat-box.soul-box { border-color: rgba(192, 132, 252, 0.7); }
+    .stat-box.gem-box { border-color: rgba(6, 182, 212, 0.7); }
+    .stat-label { margin-bottom: 4px; color: var(--muted); font-size: clamp(11px, 1.5vw, 13px); }
+    .stat-value { color: var(--gold); font-size: clamp(19px, 3vw, 27px); font-weight: 800; }
+    .soul-value { color: var(--soul); }
+    .gem-value { color: var(--gem); }
+    .title-right { display: flex; flex-direction: column; gap: 10px; width: min(270px, 100%); }
+    .info-text { color: var(--muted); font-size: clamp(11px, 1.6vw, 14px); line-height: 1.6; text-align: center; }
+    .equipment-screen { align-items: center; justify-content: center; gap: 10px; overflow-y: auto; }
+    .equipment-title { color: #22c55e; font-size: clamp(23px, 4vw, 30px); font-weight: 800; }
+    .equipment-status { width: min(720px, 100%); padding: 12px; border: 1px solid #22c55e; border-radius: 10px; background: var(--panel); }
+    .status-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .status-row:last-child { border-bottom: none; }
+    .status-label { color: var(--muted); font-size: 12px; }
+    .status-value { color: var(--text); font-size: 14px; font-weight: 700; }
+    .equipment-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: min(720px, 100%); margin-bottom: 15px; }
+    .equipment-slot { min-height: 90px; padding: 10px; border: 2px solid var(--panel-border); border-radius: 10px; background: #1e293b; text-align: center; }
+    .equipment-slot.equipped { border-color: #22c55e; background: rgba(34, 197, 94, 0.1); }
+    .slot-label { display: block; color: var(--muted); font-size: 10px; font-weight: 700; margin-bottom: 6px; }
+    .slot-item { display: block; color: var(--text); font-size: 12px; font-weight: 700; }
+    .slot-item.none { color: var(--muted); font-size: 11px; }
+    .inventory-list { width: min(720px, 100%); max-height: 280px; overflow-y: auto; border: 1px solid var(--panel-border); border-radius: 8px; background: var(--panel); padding: 12px; }
+    .inventory-section { margin-bottom: 15px; }
+    .inventory-section:last-child { margin-bottom: 0; }
+    .inventory-title { color: var(--gold); font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+    .inventory-items { display: flex; flex-wrap: wrap; gap: 6px; }
+    .inventory-item { padding: 6px 10px; border: 1px solid; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.1s; }
+    .inventory-item:active { transform: scale(0.95); }
+    .inventory-item.normal { border-color: var(--muted); color: var(--muted); }
+    .inventory-item.rare { border-color: #3b82f6; color: #3b82f6; }
+    .inventory-item.sr { border-color: var(--sr); color: var(--sr); }
+    .inventory-item.ssr { border-color: var(--ssr); color: var(--ssr); }
+    .inventory-item.equipped { background: rgba(34, 197, 94, 0.25); border-width: 2px; border-color: #22c55e; }
+    .inventory-count { color: var(--muted); font-size: 11px; margin-left: 4px; }
+    .soul-screen { align-items: center; justify-content: center; gap: 10px; overflow-y: auto; }
+    .soul-title { color: var(--soul); font-size: clamp(23px, 4vw, 32px); font-weight: 900; text-shadow: 0 2px 5px #000; }
+    .soul-total { color: #e9d5ff; font-size: clamp(14px, 2vw, 18px); font-weight: 800; }
+    .upgrade-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: min(720px, 100%); }
+    .upgrade-card { display: grid; grid-template-columns: 45px 1fr; grid-template-rows: auto auto auto; column-gap: 8px; min-width: 0; padding: 10px; border: 1px solid rgba(192, 132, 252, 0.45); border-radius: 12px; background: var(--panel); }
+    .upgrade-icon { grid-row: 1 / 4; align-self: center; font-size: 32px; text-align: center; }
+    .upgrade-name { overflow: hidden; color: #e9d5ff; font-size: clamp(13px, 1.8vw, 16px); font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+    .upgrade-effect { overflow: hidden; color: var(--muted); font-size: clamp(10px, 1.4vw, 12px); line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+    .upgrade-bottom { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-top: 5px; }
+    .upgrade-level { color: var(--gold); font-size: 11px; font-weight: 800; }
+    .upgrade-cost { color: var(--soul); font-size: 11px; font-weight: 800; }
+    .upgrade-button { min-height: 32px; padding: 5px 9px; border: none; border-radius: 7px; background: #7c3aed; color: #ffffff; font-size: 11px; font-weight: 800; }
+    .upgrade-button:disabled { opacity: 0.4; }
+    .job-select-screen { align-items: center; justify-content: center; gap: 10px; overflow-y: auto; }
+    .job-title { color: var(--gold); font-size: clamp(23px, 4vw, 30px); font-weight: 800; }
+    .job-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: min(760px, 100%); }
+    .job-card { min-width: 0; min-height: 115px; padding: 10px 6px; border: 2px solid var(--panel-border); border-radius: 12px; background: #1e293b; color: var(--text); text-align: center; }
+    .job-card.selected { border-color: var(--gold); background: #594313; }
+    .job-icon { display: block; font-size: clamp(25px, 4vw, 38px); }
+    .job-name { display: block; margin-top: 3px; color: var(--gold); font-size: clamp(13px, 2vw, 17px); font-weight: 800; }
+    .job-description { display: block; margin-top: 4px; color: var(--muted); font-size: clamp(9px, 1.3vw, 11px); line-height: 1.3; }
+    .job-status { min-height: 22px; color: var(--gold); font-size: clamp(12px, 1.8vw, 15px); }
+    .job-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .companion-select-screen { align-items: center; justify-content: center; gap: 10px; overflow-y: auto; }
+    .companion-title { color: var(--gold); font-size: clamp(23px, 4vw, 30px); font-weight: 800; }
+    .companion-subtitle { color: var(--muted); font-size: clamp(12px, 2vw, 15px); }
+    .companion-count { color: var(--gold); font-size: clamp(14px, 2.2vw, 17px); font-weight: 800; }
+    .pet-select-screen { align-items: center; justify-content: center; gap: 10px; overflow-y: auto; }
+    .pet-title { color: var(--pet); font-size: clamp(23px, 4vw, 30px); font-weight: 800; }
+    .pet-subtitle { color: var(--muted); font-size: clamp(12px, 2vw, 15px); }
+    .pet-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: min(760px, 100%); }
+    .pet-card { min-width: 0; min-height: 115px; padding: 10px 6px; border: 2px solid var(--panel-border); border-radius: 12px; background: #1e293b; color: var(--text); text-align: center; }
+    .pet-card.selected { border-color: var(--pet); background: #591343; }
+    .pet-icon { display: block; font-size: clamp(25px, 4vw, 38px); }
+    .pet-name { display: block; margin-top: 3px; color: var(--pet); font-size: clamp(13px, 2vw, 17px); font-weight: 800; }
+    .pet-evolution { display: block; margin-top: 4px; color: var(--muted); font-size: clamp(9px, 1.3vw, 11px); line-height: 1.3; }
+    .ad-screen { align-items: center; justify-content: center; gap: 10px; overflow-y: auto; }
+    .ad-title { color: var(--gem); font-size: clamp(23px, 4vw, 30px); font-weight: 800; }
+    .ad-subtitle { color: var(--muted); font-size: clamp(12px, 2vw, 15px); }
+    .ad-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: min(720px, 100%); }
+    .ad-card { min-width: 0; padding: 12px; border: 1px solid rgba(6, 182, 212, 0.45); border-radius: 12px; background: var(--panel); text-align: center; }
+    .ad-icon { font-size: 32px; margin-bottom: 6px; }
+    .ad-name { color: var(--gem); font-size: clamp(13px, 1.8vw, 16px); font-weight: 900; margin-bottom: 4px; }
+    .ad-reward { color: var(--gold); font-size: clamp(11px, 1.5vw, 14px); font-weight: 800; margin-bottom: 6px; }
+    .ad-count { color: var(--muted); font-size: clamp(10px, 1.4vw, 12px); margin-bottom: 8px; }
+    .ad-button { min-height: 36px; padding: 6px 12px; border: none; border-radius: 8px; background: #0891b2; color: #ffffff; font-size: 12px; font-weight: 800; width: 100%; }
+    .ad-button:disabled { opacity: 0.4; }
+    .ad-button.watchable { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+    .gacha-screen { align-items: center; justify-content: center; gap: 10px; overflow-y: auto; }
+    .gacha-title { color: var(--sr); font-size: clamp(23px, 4vw, 30px); font-weight: 800; }
+    .gacha-subtitle { color: var(--muted); font-size: clamp(12px, 2vw, 15px); }
+    .gacha-count { color: var(--gold); font-size: clamp(14px, 2.2vw, 17px); font-weight: 800; }
+    .gacha-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: min(720px, 100%); }
+    .gacha-card { min-width: 0; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.45); border-radius: 12px; background: var(--panel); text-align: center; }
+    .gacha-icon { font-size: 32px; margin-bottom: 6px; }
+    .gacha-name { color: var(--sr); font-size: clamp(13px, 1.8vw, 16px); font-weight: 900; margin-bottom: 4px; }
+    .gacha-cost { color: var(--gem); font-size: clamp(11px, 1.5vw, 14px); font-weight: 800; margin-bottom: 6px; }
+    .gacha-button { min-height: 36px; padding: 6px 12px; border: none; border-radius: 8px; background: #7c3aed; color: #ffffff; font-size: 12px; font-weight: 800; width: 100%; }
+    .gacha-button:disabled { opacity: 0.4; }
+    .gacha-result { position: fixed; z-index: 1000; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: none; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
+    .gacha-result.active { display: flex; }
+    .gacha-result-title { color: var(--gold); font-size: clamp(24px, 4vw, 32px); font-weight: 900; }
+    .gacha-result-item { padding: 15px 25px; border: 2px solid; border-radius: 12px; background: var(--panel); text-align: center; min-width: 200px; }
+    .gacha-result-item.normal { border-color: var(--muted); }
+    .gacha-result-item.rare { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+    .gacha-result-item.sr { border-color: var(--sr); box-shadow: 0 0 25px rgba(168, 85, 247, 0.6); }
+    .gacha-result-item.ssr { border-color: var(--ssr); box-shadow: 0 0 30px rgba(245, 158, 11, 0.7); }
+    .gacha-result-icon { font-size: 48px; margin-bottom: 8px; }
+    .gacha-result-name { color: var(--text); font-size: clamp(16px, 2.5vw, 20px); font-weight: 800; }
+    .gacha-result-rarity { margin-top: 6px; font-size: clamp(12px, 2vw, 14px); font-weight: 900; }
+    .gacha-result-item.normal .gacha-result-rarity { color: var(--muted); }
+    .gacha-result-item.rare .gacha-result-rarity { color: #3b82f6; }
+    .gacha-result-item.sr .gacha-result-rarity { color: var(--sr); }
+    .gacha-result-item.ssr .gacha-result-rarity { color: var(--ssr); }
+    .gacha-close-btn { margin-top: 20px; min-height: 44px; padding: 10px 30px; border: none; border-radius: 11px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #111827; font-size: clamp(14px, 2vw, 18px); font-weight: 800; }
+    .game-screen { gap: 5px; padding: clamp(4px, 0.8vw, 10px); }
+    .hud { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); flex: 0 0 auto; gap: 4px; width: 100%; }
+    .hud-item { min-width: 0; min-height: 34px; padding: 4px 3px; border: 1px solid var(--panel-border); border-radius: 7px; background: var(--panel); text-align: center; }
+    .hud-item:nth-child(2) { border-color: var(--danger); }
+    .hud-item:nth-child(7) { border-color: #4ade80; }
+    .hud-label { display: block; overflow: hidden; color: var(--muted); font-size: clamp(8px, 1.1vw, 10px); font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .hud-value { display: block; overflow: hidden; margin-top: 2px; color: var(--gold); font-size: clamp(10px, 1.45vw, 14px); font-weight: 800; text-overflow: ellipsis; text-shadow: 0 1px 2px #000; white-space: nowrap; }
+    .hud-item:nth-child(2) .hud-value { color: var(--danger); font-size: clamp(11px, 1.7vw, 16px); }
+    .hud-item:nth-child(7) .hud-value { color: #86efac; font-size: clamp(11px, 1.7vw, 16px); }
+    .hud-soul { color: var(--soul); }
+    .hud-gem { color: var(--gem); }
+    .game-area { position: relative; flex: 1 1 auto; min-height: 125px; width: 100%; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 10px; background: linear-gradient(to bottom, #3b82f6 0%, #1d4ed8 67%, #166534 67%, #14532d 100%); }
+    .game-area::before { content: ""; position: absolute; z-index: 0; top: 0; left: 0; width: 200%; height: 100%; opacity: 0.25; pointer-events: none; background-image: linear-gradient(135deg, transparent 0 45%, rgba(255, 255, 255, 0.35) 46% 48%, transparent 49% 100%); background-size: 180px 120px; animation: backgroundFlow 30s linear infinite; }
+    .game-area::after { content: ""; position: absolute; z-index: 1; bottom: 34px; left: 0; width: 200%; height: 4px; background: #86efac; box-shadow: 0 7px 0 rgba(22, 101, 52, 0.9), 0 14px 0 rgba(20, 83, 45, 0.85); animation: groundFlow 20s linear infinite; }
+    @keyframes backgroundFlow { from { transform: translateX(0); } to { transform: translateX(-180px); } }
+    @keyframes groundFlow { from { transform: translateX(0); } to { transform: translateX(-150px); } }
+    .cloud { position: absolute; z-index: 1; font-size: clamp(22px, 4vw, 38px); opacity: 0.7; pointer-events: none; animation: cloudFlow 28s linear infinite; }
+    .cloud.one { top: 14px; left: 75%; }
+    .cloud.two { top: 48px; left: 38%; animation-delay: -12s; animation-duration: 35s; }
+    @keyframes cloudFlow { from { transform: translateX(80px); } to { transform: translateX(-420px); } }
+    .character { position: absolute; z-index: 6; bottom: 38px; left: 12%; font-size: clamp(34px, 7vw, 58px); line-height: 1; transition: transform 0.25s ease; }
+    .character.old { filter: grayscale(0.2); transform: scale(0.9); }
+    .companion { position: absolute; z-index: 5; bottom: 38px; font-size: clamp(28px, 6vw, 48px); line-height: 1; transition: transform 0.25s ease; }
+    .companion.old { filter: grayscale(0.2); transform: scale(0.85); }
+    .pet { position: absolute; z-index: 4; bottom: 38px; left: 3%; font-size: clamp(24px, 5vw, 42px); line-height: 1; transition: transform 0.25s ease; }
+    .pet.old { filter: grayscale(0.2); transform: scale(0.85); }
+    .enemy-unit { position: absolute; z-index: 5; bottom: 38px; display: flex; align-items: center; justify-content: flex-end; flex-direction: column; width: 52px; height: 80px; color: #ffffff; font-size: clamp(22px, 4vw, 36px); line-height: 1; text-align: center; will-change: left; }
+    .enemy-unit.boss { width: 76px; height: 106px; font-size: clamp(34px, 6vw, 54px); }
+    .enemy-unit.contacting { filter: drop-shadow(0 0 7px #fb7185); }
+    .enemy-unit.buff-target { filter: drop-shadow(0 0 8px #facc15); }
+    .enemy-icon { display: block; width: 100%; line-height: 1; }
+    .enemy-hp-display { position: absolute; z-index: 25; display: flex; align-items: center; flex-direction: column; width: 68px; height: 29px; pointer-events: none; transform: translateX(-50%); }
+    .enemy-hp-display.boss { width: 110px; }
+    .enemy-hp-title { display: block; color: #ffffff; font-size: 7px; font-weight: 900; line-height: 8px; text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; }
+    .enemy-hp-bar { display: block; width: 100%; height: 9px; overflow: hidden; border: 1px solid #ffffff; border-radius: 5px; background: #450a0a; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.95); }
+    .enemy-hp-fill { display: block; width: 100%; height: 100%; background: linear-gradient(to right, #dc2626, #f87171); transition: width 0.2s linear; }
+    .enemy-hp-number { display: block; color: #ffffff; font-size: 7px; font-weight: 900; line-height: 8px; text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; }
+    .character-hp-bar { position: absolute; z-index: 20; bottom: -18px; left: 0; width: 92px; height: 13px; overflow: hidden; border: 2px solid #ffffff; border-radius: 6px; background: #111827; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); }
+    .character-hp-fill { display: block; width: 100%; height: 100%; background: var(--hero-hp); transition: width 0.2s linear; }
+    .skill-effect { position: absolute; z-index: 60; top: 50%; left: 50%; width: 0; height: 0; border: 4px solid rgba(255, 255, 255, 0.9); border-radius: 50%; opacity: 0; pointer-events: none; transform: translate(-50%, -50%); }
+    .skill-effect.active { animation: skillBurst 0.8s ease-out both; }
+    .skill-effect.warrior { border-color: #fbbf24; box-shadow: 0 0 35px #f59e0b; }
+    .skill-effect.mage { border-color: #a78bfa; box-shadow: 0 0 40px #8b5cf6; }
+    .skill-effect.thief { border-color: #f472b6; box-shadow: 0 0 35px #ec4899; }
+    .skill-effect.priest { border-color: #fef08a; box-shadow: 0 0 40px #fde047; }
+    @keyframes skillBurst { 0% { width: 0; height: 0; opacity: 1; } 100% { width: min(90vw, 620px); height: min(90vw, 620px); opacity: 0; } }
+    .game-notification { position: absolute; z-index: 100; top: 42%; left: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; min-width: 190px; max-width: 80%; padding: 10px 14px; border: 2px solid var(--gold); border-radius: 14px; background: rgba(15, 23, 42, 0.96); color: #ffffff; text-align: center; opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.8); }
+    .game-notification.show { animation: notificationShow 2.2s ease both; }
+    .notification-title { color: var(--gold); font-size: clamp(17px, 3vw, 25px); font-weight: 900; }
+    .notification-line { margin-top: 3px; color: var(--text); font-size: clamp(12px, 2vw, 16px); font-weight: 700; line-height: 1.5; }
+    .notification-line.exp { color: #7dd3fc; }
+    .notification-line.gold { color: #fde68a; }
+    .notification-line.equipment { color: #86efac; }
+    .notification-line.pet { color: #f472b6; }
+    .notification-line.gem { color: #06b6d4; }
+    @keyframes notificationShow { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); } }
+    .exp-panel { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; width: 100%; padding: 5px 9px; border: 1px solid rgba(56, 189, 248, 0.65); border-radius: 8px; background: var(--panel); }
+    .exp-label { flex: 0 0 auto; color: #bae6fd; font-size: 11px; font-weight: 800; }
+    .exp-number { flex: 0 0 auto; min-width: 72px; color: #bae6fd; font-size: 11px; font-weight: 800; text-align: right; }
+    .exp-bar { flex: 1 1 auto; height: 11px; overflow: hidden; border: 1px solid #bae6fd; border-radius: 5px; background: #082f49; }
+    .exp-fill { width: 0%; height: 100%; background: linear-gradient(to right, #0284c7, #7dd3fc); transition: width 0.1s linear; }
+    .skill-panel { display: grid; grid-template-columns: 82px 1fr; align-items: center; gap: 7px; flex: 0 0 auto; width: 100%; padding: 5px 9px; border: 2px solid rgba(167, 139, 250, 0.8); border-radius: 8px; background: rgba(30, 27, 75, 0.98); }
+    .skill-name { overflow: hidden; color: #ede9fe; font-size: 11px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+    .skill-bar { height: 11px; overflow: hidden; border: 2px solid #c4b5fd; border-radius: 5px; background: #312e81; }
+    .skill-fill { width: 0%; height: 100%; background: linear-gradient(to right, #7c3aed, #c4b5fd); transition: width 0.08s linear; }
+    .bottom-panel { display: grid; grid-template-columns: 1fr 1fr; flex: 0 0 auto; gap: 5px; width: 100%; }
+    .bottom-box { min-width: 0; padding: 6px 9px; border: 1px solid var(--panel-border); border-radius: 8px; background: var(--panel); }
+    .bottom-title { margin-bottom: 3px; color: #fde68a; font-size: 10px; font-weight: 800; }
+    .equipment-line { overflow: hidden; color: var(--text); font-size: clamp(9px, 1.35vw, 12px); line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+    .equipment-bonus { color: #86efac; font-size: clamp(9px, 1.3vw, 11px); line-height: 1.35; }
+    .timer-panel { display: grid; grid-template-columns: 1fr 60px; align-items: center; gap: 8px; }
+    .timer-label { color: var(--muted); font-size: 10px; }
+    .timer-bar { width: 100%; height: 8px; margin-top: 4px; overflow: hidden; border-radius: 4px; background: rgba(255, 255, 255, 0.25); }
+    .timer-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #fbbf24, #f59e0b); transition: width 1s linear; }
+    .timer-value { color: var(--gold); font-size: 18px; font-weight: 800; text-align: center; }
+    .battle-log { grid-column: 1 / -1; min-height: 18px; overflow: hidden; color: #e2e8f0; font-size: 11px; font-weight: 700; line-height: 1.3; text-align: center; text-overflow: ellipsis; text-shadow: 0 1px 2px #000; white-space: nowrap; }
+    .combat-log-panel { min-width: 0; padding: 6px 9px; border: 1px solid var(--panel-border); border-radius: 8px; background: var(--panel); max-height: 80px; overflow-y: auto; }
+    .combat-log-title { margin-bottom: 4px; color: #fde68a; font-size: 10px; font-weight: 800; }
+    .combat-log-list { display: flex; flex-direction: column; gap: 2px; max-height: 55px; overflow-y: auto; }
+    .combat-log-entry { color: var(--text); font-size: 10px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .combat-log-entry.damage { color: #f87171; }
+    .combat-log-entry.skill { color: #a78bfa; }
+    .combat-log-entry.heal { color: #4ade80; }
+    .combat-log-entry.enemy { color: #fb7185; }
+    .result-screen { align-items: center; justify-content: center; gap: 18px; overflow-y: auto; }
+    .result-icon { font-size: clamp(48px, 8vw, 80px); }
+    .result-content { width: min(470px, 100%); text-align: center; }
+    .result-title { margin-bottom: 14px; color: #f87171; font-size: clamp(24px, 4vw, 36px); }
+    .result-soul { margin-bottom: 10px; color: var(--soul); font-size: clamp(16px, 2.5vw, 22px); font-weight: 900; }
+    .result-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; margin-bottom: 15px; }
+    .result-row { padding: 8px; border: 1px solid var(--panel-border); border-radius: 8px; background: var(--panel); }
+    .result-label { display: block; margin-bottom: 3px; color: var(--muted); font-size: 10px; }
+    .result-value { color: var(--gold); font-size: clamp(16px, 2.5vw, 22px); font-weight: 800; }
+    .rotate-message { display: none; position: fixed; z-index: 9999; top: 0; left: 0; align-items: center; justify-content: center; flex-direction: column; width: 100vw; height: 100vh; padding: 30px; background: rgba(17, 24, 39, 0.97); text-align: center; }
+    .rotate-message.active { display: flex; }
+    .rotate-icon { margin-bottom: 14px; font-size: 54px; }
+    .rotate-text { margin-bottom: 8px; color: var(--gold); font-size: 19px; }
+    .rotate-sub { color: var(--muted); font-size: 13px; }
+    @media (orientation: portrait) { .rotate-message { display: flex; } .screen:not(.rotate-message) { display: none !important; } }
+    @media (max-width: 700px) { .title-screen { flex-direction: column; } .job-grid, .pet-grid, .ad-list, .gacha-list { grid-template-columns: repeat(2, 1fr); } .upgrade-list, .equipment-slots { grid-template-columns: 1fr; } .bottom-panel { grid-template-columns: 1fr; } .timer-panel { grid-template-columns: 1fr 60px; } }
   </style>
 </head>
-
 <body>
   <div class="rotate-message" id="rotateMessage">
     <div class="rotate-icon">📱</div>
@@ -459,425 +252,1559 @@
   <div class="screen title-screen active" id="titleScreen">
     <div class="title-left">
       <h1>🔄 輪廻勇者の一生</h1>
-
       <div class="stats">
-        <div class="stat-box">
-          <div class="stat-label">人生</div>
-          <div class="stat-value" id="displayLife">1</div>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-label">自己最高距離</div>
-          <div class="stat-value" id="displayBestDistance">0m</div>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-label">ジェム</div>
-          <div class="stat-value" id="displayGems">0</div>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-label">ゴールド</div>
-          <div class="stat-value" id="displayGold">0</div>
-        </div>
+        <div class="stat-box"><div class="stat-label">人生</div><div class="stat-value" id="displayLife">1</div></div>
+        <div class="stat-box"><div class="stat-label">自己最高距離</div><div class="stat-value" id="displayBestDistance">0m</div></div>
+        <div class="stat-box"><div class="stat-label">最高ポイント</div><div class="stat-value" id="displayBestPoint">0</div></div>
+        <div class="stat-box"><div class="stat-label">ゴールド</div><div class="stat-value" id="displayGold">0</div></div>
+        <div class="stat-box gem-box"><div class="stat-label">ジェム</div><div class="stat-value gem-value" id="displayGem">0</div></div>
+        <div class="stat-box soul-box"><div class="stat-label">魂</div><div class="stat-value soul-value" id="displaySoul">0</div></div>
+        <div class="stat-box soul-box"><div class="stat-label">恒久強化</div><div class="stat-value soul-value" id="displaySoulLevel">0</div></div>
       </div>
-
-      <div class="info-text">
-        30秒ステージ / 横スクロール / 自動戦闘<br>
-        70歳で人生終了 / 年齢と共に成長
-      </div>
+      <div class="info-text">敵が大量に出現する群れ戦です<br>職業ごとの自動範囲スキルが発動します</div>
     </div>
-
     <div class="title-right">
-      <button class="btn" id="startButton">冒険を始める</button>
+      <button class="btn" id="adventureButton">冒険の準備</button>
+      <button class="btn btn-equipment" id="equipmentButton">装備</button>
+      <button class="btn btn-gem" id="adButton">広告報酬</button>
+      <button class="btn btn-gacha" id="gachaButton">ガチャ</button>
+      <button class="btn btn-soul" id="soulButton">魂の強化</button>
       <button class="btn btn-secondary" id="resetButton">データリセット</button>
     </div>
   </div>
 
+  <div class="screen equipment-screen" id="equipmentScreen">
+    <div class="equipment-title">⚔️ 装備</div>
+    <div class="equipment-status">
+      <div class="status-row"><span class="status-label">攻撃力</span><span class="status-value" id="statusAttack">0</span></div>
+      <div class="status-row"><span class="status-label">防御力</span><span class="status-value" id="statusDefense">0</span></div>
+      <div class="status-row"><span class="status-label">最大 HP</span><span class="status-value" id="statusMaxHp">0</span></div>
+    </div>
+    <div class="equipment-slots">
+      <div class="equipment-slot" id="weaponSlot"><span class="slot-label">⚔️ 武器</span><span class="slot-item none" id="weaponSlotItem">なし</span></div>
+      <div class="equipment-slot" id="armorSlot"><span class="slot-label">🛡️ 防具</span><span class="slot-item none" id="armorSlotItem">なし</span></div>
+      <div class="equipment-slot" id="accessorySlot"><span class="slot-label">💍 アクセ</span><span class="slot-item none" id="accessorySlotItem">なし</span></div>
+    </div>
+    <div class="inventory-list">
+      <div class="inventory-section"><div class="inventory-title">⚔️ 武器</div><div class="inventory-items" id="weaponInventory"></div></div>
+      <div class="inventory-section"><div class="inventory-title">🛡️ 防具</div><div class="inventory-items" id="armorInventory"></div></div>
+      <div class="inventory-section"><div class="inventory-title">💍 アクセサリ</div><div class="inventory-items" id="accessoryInventory"></div></div>
+    </div>
+    <button class="btn btn-secondary" id="backFromEquipmentButton">戻る</button>
+  </div>
+
+  <div class="screen ad-screen" id="adScreen">
+    <div class="ad-title">💎 広告報酬</div>
+    <div class="ad-subtitle">広告を視聴して報酬を獲得（仮置き実装）</div>
+    <div class="ad-list">
+      <div class="ad-card"><div class="ad-icon">💎</div><div class="ad-name">ジェム獲得</div><div class="ad-reward">+10 ジェム</div><div class="ad-count" id="adGemCount">残り 5 回</div><button class="ad-button watchable" id="watchGemAdButton">広告を視聴</button></div>
+      <div class="ad-card"><div class="ad-icon">💰</div><div class="ad-name">ゴールド獲得</div><div class="ad-reward">+500 ゴールド</div><div class="ad-count" id="adGoldCount">残り 5 回</div><button class="ad-button watchable" id="watchGoldAdButton">広告を視聴</button></div>
+      <div class="ad-card"><div class="ad-icon">🎁</div><div class="ad-name">無料ガチャ</div><div class="ad-reward">装備ガチャ 1 回</div><div class="ad-count" id="adGachaCount">残り 3 回</div><button class="ad-button watchable" id="watchGachaAdButton">広告を視聴</button></div>
+      <div class="ad-card"><div class="ad-icon">⚡</div><div class="ad-name">2 倍速</div><div class="ad-reward">1 時間効果</div><div class="ad-count" id="adSpeedCount">残り 3 回</div><button class="ad-button watchable" id="watchSpeedAdButton">広告を視聴</button></div>
+    </div>
+    <button class="btn btn-secondary" id="backFromAdButton">戻る</button>
+  </div>
+
+  <div class="screen gacha-screen" id="gachaScreen">
+    <div class="gacha-title">🎰 ガチャ</div>
+    <div class="gacha-subtitle">ジェムを消費して装備を入手</div>
+    <div class="gacha-count" id="gachaGemCount">所持ジェム：0</div>
+    <div class="gacha-list">
+      <div class="gacha-card"><div class="gacha-icon">⚔️</div><div class="gacha-name">武器ガチャ</div><div class="gacha-cost">1 ジェム</div><button class="gacha-button" id="pullWeaponGachaButton">引く</button></div>
+      <div class="gacha-card"><div class="gacha-icon">🛡️</div><div class="gacha-name">防具ガチャ</div><div class="gacha-cost">1 ジェム</div><button class="gacha-button" id="pullArmorGachaButton">引く</button></div>
+      <div class="gacha-card"><div class="gacha-icon">💍</div><div class="gacha-name">アクセサリガチャ</div><div class="gacha-cost">1 ジェム</div><button class="gacha-button" id="pullAccessoryGachaButton">引く</button></div>
+      <div class="gacha-card"><div class="gacha-icon">🎁</div><div class="gacha-name">無料ガチャ</div><div class="gacha-cost">無料（1 日 3 回）</div><div class="ad-count" id="freeGachaCount">残り 3 回</div><button class="gacha-button" id="pullFreeGachaButton">引く</button></div>
+    </div>
+    <button class="btn btn-secondary" id="backFromGachaButton">戻る</button>
+  </div>
+
+  <div class="gacha-result" id="gachaResult">
+    <div class="gacha-result-title">ガチャ結果！</div>
+    <div class="gacha-result-item" id="gachaResultItem">
+      <div class="gacha-result-icon" id="gachaResultIcon">⚔️</div>
+      <div class="gacha-result-name" id="gachaResultName">鉄の剣</div>
+      <div class="gacha-result-rarity" id="gachaResultRarity">レア</div>
+    </div>
+    <button class="gacha-close-btn" id="closeGachaResultButton">閉じる</button>
+  </div>
+
+  <div class="screen soul-screen" id="soulScreen">
+    <div class="soul-title">🔮 魂の強化</div>
+    <div class="soul-total">所持魂：<span id="soulScreenSoul">0</span></div>
+    <div class="upgrade-list">
+      <div class="upgrade-card"><div class="upgrade-icon">❤️</div><div class="upgrade-name">生命の魂</div><div class="upgrade-effect">全職業の最大 HP +10</div><div class="upgrade-bottom"><span class="upgrade-level" id="hpUpgradeLevel">Lv0</span><span class="upgrade-cost" id="hpUpgradeCost">必要魂：30</span><button class="upgrade-button" id="hpUpgradeButton">強化</button></div></div>
+      <div class="upgrade-card"><div class="upgrade-icon">⚔️</div><div class="upgrade-name">力の魂</div><div class="upgrade-effect">全職業の攻撃力 +2</div><div class="upgrade-bottom"><span class="upgrade-level" id="attackUpgradeLevel">Lv0</span><span class="upgrade-cost" id="attackUpgradeCost">必要魂：40</span><button class="upgrade-button" id="attackUpgradeButton">強化</button></div></div>
+      <div class="upgrade-card"><div class="upgrade-icon">🛡️</div><div class="upgrade-name">守りの魂</div><div class="upgrade-effect">全職業の防御力 +1</div><div class="upgrade-bottom"><span class="upgrade-level" id="defenseUpgradeLevel">Lv0</span><span class="upgrade-cost" id="defenseUpgradeCost">必要魂：50</span><button class="upgrade-button" id="defenseUpgradeButton">強化</button></div></div>
+      <div class="upgrade-card"><div class="upgrade-icon">💰</div><div class="upgrade-name">富の魂</div><div class="upgrade-effect">敵の獲得ゴールド +10%</div><div class="upgrade-bottom"><span class="upgrade-level" id="goldUpgradeLevel">Lv0</span><span class="upgrade-cost" id="goldUpgradeCost">必要魂：60</span><button class="upgrade-button" id="goldUpgradeButton">強化</button></div></div>
+    </div>
+    <button class="btn btn-secondary" id="backFromSoulButton">戻る</button>
+  </div>
+
+  <div class="screen job-select-screen" id="jobSelectScreen">
+    <div class="job-title">職業を選択</div>
+    <div class="job-grid">
+      <button class="job-card" data-job="warrior"><span class="job-icon">⚔️</span><span class="job-name">戦士</span><span class="job-description">回転斬り：接触中全体攻撃</span></button>
+      <button class="job-card" data-job="mage"><span class="job-icon">🔮</span><span class="job-name">魔法使い</span><span class="job-description">メテオ：画面内全体攻撃</span></button>
+      <button class="job-card" data-job="thief"><span class="job-icon">🗡️</span><span class="job-name">盗賊</span><span class="job-description">乱舞：3 体へ連続攻撃</span></button>
+      <button class="job-card" data-job="priest"><span class="job-icon">✨</span><span class="job-name">僧侶</span><span class="job-description">聖なる波動：範囲＋回復</span></button>
+    </div>
+    <div class="job-status" id="jobStatus">職業を選択してください</div>
+    <div class="job-buttons">
+      <button class="btn" id="toCompanionButton" disabled>仲間選択へ</button>
+      <button class="btn btn-secondary" id="backTitleButton2">戻る</button>
+    </div>
+  </div>
+
+  <div class="screen companion-select-screen" id="companionSelectScreen">
+    <div class="companion-title">仲間を選択</div>
+    <div class="companion-subtitle">0〜3 人選択可能（タップで選択/解除）</div>
+    <div class="companion-count" id="companionCount">選択中：0 人</div>
+    <div class="job-grid" id="companionGrid"></div>
+    <div class="job-buttons">
+      <button class="btn" id="toPetButton">ペット選択へ</button>
+      <button class="btn btn-secondary" id="backToJobButton">戻る</button>
+    </div>
+  </div>
+
+  <div class="screen pet-select-screen" id="petSelectScreen">
+    <div class="pet-title">ペットを選択</div>
+    <div class="pet-subtitle">1 匹選択（タップで選択/解除）</div>
+    <div class="pet-grid" id="petGrid">
+      <button class="pet-card" data-pet="slime"><span class="pet-icon">🟢</span><span class="pet-name">スライム</span><span class="pet-evolution">30 歳：大スライム</span></button>
+      <button class="pet-card" data-pet="bird"><span class="pet-icon">🐦</span><span class="pet-name">小鳥</span><span class="pet-evolution">30 歳：大鳥</span></button>
+      <button class="pet-card" data-pet="dog"><span class="pet-icon">🐕</span><span class="pet-name">犬</span><span class="pet-evolution">30 歳：大型犬</span></button>
+      <button class="pet-card" data-pet="none"><span class="pet-icon">❌</span><span class="pet-name">なし</span><span class="pet-evolution">ペット不带同</span></button>
+    </div>
+    <div class="job-buttons">
+      <button class="btn" id="startGameWithPetButton">このメンバーで出発</button>
+      <button class="btn btn-secondary" id="backToCompanionButton">戻る</button>
+    </div>
+  </div>
+
   <div class="screen game-screen" id="gameScreen">
-    <div class="game-sidebar">
-      <div class="game-stats">
-        <div class="game-stat-row">
-          <span class="game-stat-label">年齢</span>
-          <span class="game-stat-value" id="gameAge">20歳</span>
-        </div>
-
-        <div class="game-stat-row">
-          <span class="game-stat-label">Lv</span>
-          <span class="game-stat-value" id="gameLevel">1</span>
-        </div>
-
-        <div class="game-stat-row">
-          <span class="game-stat-label">ステージ</span>
-          <span class="game-stat-value" id="gameStage">1-1</span>
-        </div>
-
-        <div class="game-stat-row">
-          <span class="game-stat-label">距離</span>
-          <span class="game-stat-value" id="gameDistance">0m</span>
-        </div>
+    <div class="hud">
+      <div class="hud-item"><span class="hud-label">職業</span><span class="hud-value" id="gameJob">-</span></div>
+      <div class="hud-item"><span class="hud-label">敵数</span><span class="hud-value" id="gameEnemyCount">0 体</span></div>
+      <div class="hud-item"><span class="hud-label">年齢</span><span class="hud-value" id="gameAge">20 歳</span></div>
+      <div class="hud-item"><span class="hud-label">Lv</span><span class="hud-value" id="gameLevel">1</span></div>
+      <div class="hud-item"><span class="hud-label">ステージ</span><span class="hud-value" id="gameStage">1-1</span></div>
+      <div class="hud-item"><span class="hud-label">距離</span><span class="hud-value" id="gameDistance">0m</span></div>
+      <div class="hud-item"><span class="hud-label">HP</span><span class="hud-value" id="gameHp">100/100</span></div>
+      <div class="hud-item"><span class="hud-label">EXP</span><span class="hud-value" id="gameExp">0/100</span></div>
+      <div class="hud-item"><span class="hud-label">ゴールド</span><span class="hud-value" id="gameGold">0</span></div>
+      <div class="hud-item"><span class="hud-label">魂</span><span class="hud-value hud-soul" id="gameSoul">0</span></div>
+    </div>
+    <div class="game-area" id="gameArea">
+      <div class="cloud one">☁️</div>
+      <div class="cloud two">☁️</div>
+      <div class="character" id="hero"><span id="heroIcon">🧑‍⚔️</span><div class="character-hp-bar"><div class="character-hp-fill" id="heroHpBar"></div></div></div>
+      <div id="companionsContainer"></div>
+      <div id="petContainer"></div>
+      <div class="skill-effect" id="skillEffect"></div>
+      <div class="game-notification" id="gameNotification">
+        <div class="notification-title" id="notificationTitle"></div>
+        <div class="notification-line exp" id="notificationExp"></div>
+        <div class="notification-line gold" id="notificationGold"></div>
+        <div class="notification-line equipment" id="notificationEquipment"></div>
+        <div class="notification-line pet" id="notificationPet"></div>
+        <div class="notification-line gem" id="notificationGem"></div>
       </div>
     </div>
-
-    <div class="game-area">
-      <div class="cloud" style="top: 30px; left: 20%;">☁️</div>
-      <div class="cloud" style="top: 60px; left: 60%; animation-delay: 1s;">☁️</div>
-
-      <div class="character">
-        🧑‍⚔️
-        <div class="hp-bar">
-          <div class="hp-fill" id="heroHpBar"></div>
-        </div>
+    <div class="exp-panel">
+      <div class="exp-label">経験値</div>
+      <div class="exp-bar"><div class="exp-fill" id="expFill"></div></div>
+      <div class="exp-number" id="expNumber">0 / 100</div>
+    </div>
+    <div class="skill-panel">
+      <div class="skill-name" id="skillName">スキル</div>
+      <div class="skill-bar"><div class="skill-fill" id="skillFill"></div></div>
+    </div>
+    <div class="bottom-panel">
+      <div class="bottom-box">
+        <div class="bottom-title">現在の装備</div>
+        <div class="equipment-line" id="equipmentWeapon">武器：-</div>
+        <div class="equipment-line" id="equipmentArmor">防具：-</div>
+        <div class="equipment-line" id="equipmentAccessory">アクセ：-</div>
+        <div class="equipment-bonus" id="equipmentBonus">効果：-</div>
       </div>
-
-      <div class="enemy">
-        🧟
-        <div class="hp-bar">
-          <div class="hp-fill" id="enemyHpBar"></div>
-        </div>
+      <div class="bottom-box timer-panel">
+        <div><div class="timer-label">ステージ残り時間</div><div class="timer-bar"><div class="timer-fill" id="timerBar"></div></div></div>
+        <div class="timer-value" id="timerValue">30 秒</div>
+        <div class="battle-log" id="battleLog">敵が右から近づいてくる……</div>
       </div>
     </div>
-
-    <div class="game-footer">
-      <div class="timer-box">
-        <div class="timer-label">ステージ残り時間</div>
-
-        <div class="timer-bar">
-          <div class="timer-fill" id="timerBar"></div>
-        </div>
-
-        <div class="timer-value" id="timerValue">30秒</div>
+    <div class="bottom-panel">
+      <div class="bottom-box combat-log-panel">
+        <div class="combat-log-title">⚔️ 戦闘ログ</div>
+        <div class="combat-log-list" id="combatLogList"></div>
       </div>
-
-      <div class="battle-log" id="battleLog">
-        完全オート戦闘開始！
-      </div>
+      <div class="bottom-box"></div>
     </div>
   </div>
 
   <div class="screen result-screen" id="resultScreen">
     <div class="result-icon">💀</div>
-
     <div class="result-content">
-      <div class="result-title">人生終了</div>
-
+      <div class="result-title" id="resultTitle">人生終了</div>
+      <div class="result-soul" id="resultSoul">魂 +0</div>
       <div class="result-stats">
-        <div class="result-row">
-          <span class="result-label">到達ステージ</span>
-          <span class="result-value" id="resultStage">1-1</span>
-        </div>
-
-        <div class="result-row">
-          <span class="result-label">到達距離</span>
-          <span class="result-value" id="resultDistance">0m</span>
-        </div>
-
-        <div class="result-row">
-          <span class="result-label">獲得ゴールド</span>
-          <span class="result-value" id="resultGold">0</span>
-        </div>
-
-        <div class="result-row">
-          <span class="result-label">獲得ジェム</span>
-          <span class="result-value" id="resultGems">0</span>
-        </div>
+        <div class="result-row"><span class="result-label">人生回数</span><span class="result-value" id="resultLife">1 回目</span></div>
+        <div class="result-row"><span class="result-label">死亡年齢</span><span class="result-value" id="resultAge">70 歳</span></div>
+        <div class="result-row"><span class="result-label">到達ステージ</span><span class="result-value" id="resultStage">1-1</span></div>
+        <div class="result-row"><span class="result-label">到達距離</span><span class="result-value" id="resultDistance">0m</span></div>
+        <div class="result-row"><span class="result-label">ポイント</span><span class="result-value" id="resultPoint">0</span></div>
+        <div class="result-row"><span class="result-label">獲得ゴールド</span><span class="result-value" id="resultGold">0</span></div>
       </div>
-
       <button class="btn" id="nextLifeButton">次の人生へ</button>
     </div>
   </div>
 
   <script>
-    let gameState = {
-      life: 1,
-      bestDistance: 0,
-      gems: 0,
-      gold: 0
+    const JOBS = {
+      warrior: { name: "戦士", icon: "⚔️", maxHp: 140, attack: 12, attackInterval: 2, healAmount: 0, skillName: "⚔️ 回転斬り", skillCooldown: 6 },
+      mage: { name: "魔法使い", icon: "🔮", maxHp: 85, attack: 24, attackInterval: 2, healAmount: 0, skillName: "☄️ メテオ", skillCooldown: 7 },
+      thief: { name: "盗賊", icon: "🗡️", maxHp: 105, attack: 9, attackInterval: 1, healAmount: 0, skillName: "🗡️ 乱舞", skillCooldown: 5 },
+      priest: { name: "僧侶", icon: "✨", maxHp: 115, attack: 7, attackInterval: 2, healAmount: 5, skillName: "✨ 聖なる波動", skillCooldown: 8 }
     };
+
+    const PETS = {
+      slime: { name: "スライム", icon: "🟢", attack: 3, evolutions: [{ age: 20, icon: "🟢", name: "スライム" }, { age: 30, icon: "🔵", name: "大スライム" }, { age: 50, icon: "🟣", name: "スライムキング" }, { age: 60, icon: "⚪", name: "メタルスライム" }] },
+      bird: { name: "小鳥", icon: "🐦", attack: 4, evolutions: [{ age: 20, icon: "🐦", name: "小鳥" }, { age: 30, icon: "🦅", name: "大鳥" }, { age: 50, icon: "🦉", name: "フクロウ" }, { age: 60, icon: "🦚", name: "孔雀" }] },
+      dog: { name: "犬", icon: "🐕", attack: 5, evolutions: [{ age: 20, icon: "🐕", name: "犬" }, { age: 30, icon: "🐕‍🦺", name: "大型犬" }, { age: 50, icon: "🐺", name: "狼" }, { age: 60, icon: "🦊", name: "狐" }] },
+      none: { name: "なし", icon: "", attack: 0, evolutions: [] }
+    };
+
+    const AGE_EQUIPMENT = [
+      { age: 20, weapon: "木の剣", armor: "布の服", accessory: "古い指輪", attack: 5, maxHp: 0, defense: 0 },
+      { age: 30, weapon: "鉄の剣", armor: "革の鎧", accessory: "力の腕輪", attack: 10, maxHp: 10, defense: 2 },
+      { age: 40, weapon: "鋼の剣", armor: "鉄の鎧", accessory: "守りの指輪", attack: 15, maxHp: 20, defense: 5 },
+      { age: 50, weapon: "ルーンソード", armor: "魔法の鎧", accessory: "魔力の首飾り", attack: 20, maxHp: 40, defense: 8 },
+      { age: 60, weapon: "聖剣", armor: "聖鎧", accessory: "生命の護符", attack: 25, maxHp: 60, defense: 12 }
+    ];
+
+    const GACHA_ITEMS = {
+      weapon: [
+        { name: "木の剣", icon: "🗡️", rarity: "normal", attack: 5 },
+        { name: "鉄の剣", icon: "⚔️", rarity: "normal", attack: 10 },
+        { name: "鋼の剣", icon: "🔱", rarity: "rare", attack: 18 },
+        { name: "ルーンソード", icon: "✨", rarity: "sr", attack: 30 },
+        { name: "聖剣", icon: "👑", rarity: "ssr", attack: 50 }
+      ],
+      armor: [
+        { name: "布の服", icon: "👕", rarity: "normal", defense: 2 },
+        { name: "革の鎧", icon: "🥋", rarity: "normal", defense: 5 },
+        { name: "鉄の鎧", icon: "🛡️", rarity: "rare", defense: 10 },
+        { name: "魔法の鎧", icon: "💫", rarity: "sr", defense: 18 },
+        { name: "聖鎧", icon: "🛡️", rarity: "ssr", defense: 30 }
+      ],
+      accessory: [
+        { name: "古い指輪", icon: "💍", rarity: "normal", bonus: "HP+10" },
+        { name: "力の腕輪", icon: "💪", rarity: "normal", bonus: "攻撃 +5" },
+        { name: "守りの指輪", icon: "🔮", rarity: "rare", bonus: "防御 +5" },
+        { name: "魔力の首飾り", icon: "✨", rarity: "sr", bonus: "攻撃 +15" },
+        { name: "生命の護符", icon: "💖", rarity: "ssr", bonus: "HP+50" }
+      ]
+    };
+
+    const MONSTERS = {
+      slime: { name: "スライム", icon: "🟢", hp: 10, attack: 6, point: 10, gold: 2, experience: 15, speed: 60, attackInterval: 4, spawnWeight: 55, special: "none" },
+      goblin: { name: "ゴブリン", icon: "👺", hp: 18, attack: 10, point: 20, gold: 3, experience: 20, speed: 92, attackInterval: 4, spawnWeight: 30, special: "fast" },
+      orc: { name: "オーク", icon: "👹", hp: 30, attack: 16, point: 35, gold: 5, experience: 30, speed: 70, attackInterval: 4, spawnWeight: 15, special: "heavy" },
+      miniboss: { name: "中ボス", icon: "👿", hp: 100, attack: 28, point: 150, gold: 15, experience: 70, speed: 75, attackInterval: 4, spawnWeight: 0, special: "buffer", boss: true },
+      boss: { name: "ボス", icon: "🐉", hp: 250, attack: 45, point: 400, gold: 40, experience: 160, speed: 80, attackInterval: 4, spawnWeight: 0, special: "multi", boss: true }
+    };
+
+    const SOUL_UPGRADES = {
+      hp: { baseCost: 30, costGrowth: 1.6 },
+      attack: { baseCost: 40, costGrowth: 1.6 },
+      defense: { baseCost: 50, costGrowth: 1.65 },
+      gold: { baseCost: 60, costGrowth: 1.7 }
+    };
+
+    const AD_REWARDS = {
+      gem: { count: 5, reward: 10, type: "gem" },
+      gold: { count: 5, reward: 500, type: "gold" },
+      gacha: { count: 3, reward: 1, type: "gacha" },
+      speed: { count: 3, reward: 1, type: "speed" }
+    };
+
+    let gameState = {
+      life: 1, bestDistance: 0, bestPoint: 0, gold: 0, gem: 0, soul: 0,
+      soulUpgrades: { hp: 0, attack: 0, defense: 0, gold: 0 },
+      adCounts: { gem: 5, gold: 5, gacha: 3, speed: 3 },
+      lastAdReset: Date.now(),
+      inventory: { weapons: [], armors: [], accessories: [] },
+      equipped: { weapon: null, armor: null, accessory: null }
+    };
+
+    let selectedJobKey = null;
+    let selectedCompanions = [];
+    let selectedPetKey = "slime";
+    let notificationTimer = null;
+    let enemyIdCounter = 0;
+    let companionIdCounter = 0;
+    let petIdCounter = 0;
+    let lastPetEvolutionAge = 0;
+    let combatLog = [];
 
     let currentPlay = {
-      age: 20,
-      level: 1,
-      stage: 1,
-      distance: 0,
-      stageTime: 30,
-      heroHp: 100,
-      heroMaxHp: 100,
-      enemyHp: 50,
-      enemyMaxHp: 50,
-      isPlaying: false,
-      intervalId: null
+      jobKey: null, jobName: "", jobIcon: "", age: 20, ageTimer: 0, level: 1, experience: 0, nextExperience: 100,
+      stageNumber: 1, areaNumber: 1, stageInArea: 1, stageTime: 30, distance: 0, distanceProgress: 0, point: 0,
+      heroHp: 100, heroMaxHp: 100, equipment: AGE_EQUIPMENT[0], equipmentAttack: 0, equipmentMaxHp: 0, equipmentDefense: 0,
+      companions: [], pet: null, enemies: [], heroAttackProgress: 0, skillProgress: 0, spawnCheckTimer: 0, gameSecondProgress: 0,
+      lastFrameTime: 0, animationId: null, isPlaying: false
     };
 
+    let isInitialized = false;
+
     function init() {
+      if (isInitialized) return;
+      isInitialized = true;
       loadGame();
+      resetAdCountsIfNeeded();
       updateTitleDisplay();
-      updateGameDisplay();
+      updateSoulScreen();
+      updateAdScreen();
+      updateGachaScreen();
+      updateEquipmentScreen();
       checkOrientation();
+      window.addEventListener("resize", checkOrientation);
 
-      window.addEventListener('resize', checkOrientation);
-
-      window.addEventListener('orientationchange', function() {
-        setTimeout(checkOrientation, 300);
-      });
-
-      document.getElementById('startButton')
-        .addEventListener('click', startGame);
-
-      document.getElementById('resetButton')
-        .addEventListener('click', resetData);
-
-      document.getElementById('nextLifeButton')
-        .addEventListener('click', showTitle);
+      document.getElementById("adventureButton").addEventListener("click", function(e) { e.preventDefault(); showJobSelect(); });
+      document.getElementById("equipmentButton").addEventListener("click", function(e) { e.preventDefault(); showEquipmentScreen(); });
+      document.getElementById("adButton").addEventListener("click", function(e) { e.preventDefault(); showAdScreen(); });
+      document.getElementById("gachaButton").addEventListener("click", function(e) { e.preventDefault(); showGachaScreen(); });
+      document.getElementById("soulButton").addEventListener("click", function(e) { e.preventDefault(); showSoulScreen(); });
+      document.getElementById("resetButton").addEventListener("click", function(e) { e.preventDefault(); resetData(); });
+      document.getElementById("backFromEquipmentButton").addEventListener("click", function(e) { e.preventDefault(); showTitle(); });
+      document.getElementById("backFromAdButton").addEventListener("click", function(e) { e.preventDefault(); showTitle(); });
+      document.getElementById("backFromGachaButton").addEventListener("click", function(e) { e.preventDefault(); showTitle(); });
+      document.getElementById("backFromSoulButton").addEventListener("click", function(e) { e.preventDefault(); showTitle(); });
+      document.getElementById("toCompanionButton").addEventListener("click", function(e) { e.preventDefault(); showCompanionSelect(); });
+      document.getElementById("backTitleButton2").addEventListener("click", function(e) { e.preventDefault(); showTitle(); });
+      document.getElementById("toPetButton").addEventListener("click", function(e) { e.preventDefault(); showPetSelect(); });
+      document.getElementById("startGameWithPetButton").addEventListener("click", function(e) { e.preventDefault(); startGame(); });
+      document.getElementById("backToJobButton").addEventListener("click", function(e) { e.preventDefault(); showJobSelect(); });
+      document.getElementById("backToCompanionButton").addEventListener("click", function(e) { e.preventDefault(); showCompanionSelect(); });
+      document.getElementById("nextLifeButton").addEventListener("click", function(e) { e.preventDefault(); showTitle(); });
+      document.getElementById("hpUpgradeButton").addEventListener("click", function(e) { e.preventDefault(); buySoulUpgrade("hp"); });
+      document.getElementById("attackUpgradeButton").addEventListener("click", function(e) { e.preventDefault(); buySoulUpgrade("attack"); });
+      document.getElementById("defenseUpgradeButton").addEventListener("click", function(e) { e.preventDefault(); buySoulUpgrade("defense"); });
+      document.getElementById("goldUpgradeButton").addEventListener("click", function(e) { e.preventDefault(); buySoulUpgrade("gold"); });
+      document.getElementById("watchGemAdButton").addEventListener("click", function(e) { e.preventDefault(); watchAd("gem"); });
+      document.getElementById("watchGoldAdButton").addEventListener("click", function(e) { e.preventDefault(); watchAd("gold"); });
+      document.getElementById("watchGachaAdButton").addEventListener("click", function(e) { e.preventDefault(); watchAd("gacha"); });
+      document.getElementById("watchSpeedAdButton").addEventListener("click", function(e) { e.preventDefault(); watchAd("speed"); });
+      document.getElementById("pullWeaponGachaButton").addEventListener("click", function(e) { e.preventDefault(); pullGacha("weapon"); });
+      document.getElementById("pullArmorGachaButton").addEventListener("click", function(e) { e.preventDefault(); pullGacha("armor"); });
+      document.getElementById("pullAccessoryGachaButton").addEventListener("click", function(e) { e.preventDefault(); pullAccessoryGacha(); });
+      document.getElementById("pullFreeGachaButton").addEventListener("click", function(e) { e.preventDefault(); pullFreeGacha(); });
+      document.getElementById("closeGachaResultButton").addEventListener("click", function(e) { e.preventDefault(); closeGachaResult(); });
+      document.querySelectorAll(".job-card").forEach(function(card) { card.addEventListener("click", function(e) { e.preventDefault(); selectJob(card.dataset.job); }); });
+      document.querySelectorAll(".pet-card").forEach(function(card) { card.addEventListener("click", function(e) { e.preventDefault(); selectPet(card.dataset.pet); }); });
+      renderCompanionGrid();
     }
 
     function checkOrientation() {
-      const isPortrait = window.innerHeight > window.innerWidth;
-      const rotateMessage = document.getElementById('rotateMessage');
-
-      if (isPortrait) {
-        rotateMessage.classList.add('active');
+      const rotateMessage = document.getElementById("rotateMessage");
+      if (window.innerHeight > window.innerWidth) {
+        rotateMessage.classList.add("active");
       } else {
-        rotateMessage.classList.remove('active');
+        rotateMessage.classList.remove("active");
+      }
+    }
+
+    function normalizeGameState() {
+      if (!gameState.soulUpgrades) gameState.soulUpgrades = { hp: 0, attack: 0, defense: 0, gold: 0 };
+      if (!gameState.gem) gameState.gem = 0;
+      if (!gameState.adCounts) gameState.adCounts = { gem: 5, gold: 5, gacha: 3, speed: 3 };
+      if (!gameState.lastAdReset) gameState.lastAdReset = Date.now();
+      if (!gameState.inventory) gameState.inventory = { weapons: [], armors: [], accessories: [] };
+      if (!gameState.equipped) gameState.equipped = { weapon: null, armor: null, accessory: null };
+      gameState.life = Number(gameState.life) || 1;
+      gameState.bestDistance = Number(gameState.bestDistance) || 0;
+      gameState.bestPoint = Number(gameState.bestPoint) || 0;
+      gameState.gold = Number(gameState.gold) || 0;
+      gameState.soul = Number(gameState.soul) || 0;
+      gameState.soulUpgrades.hp = Number(gameState.soulUpgrades.hp) || 0;
+      gameState.soulUpgrades.attack = Number(gameState.soulUpgrades.attack) || 0;
+      gameState.soulUpgrades.defense = Number(gameState.soulUpgrades.defense) || 0;
+      gameState.soulUpgrades.gold = Number(gameState.soulUpgrades.gold) || 0;
+    }
+
+    function resetAdCountsIfNeeded() {
+      const now = Date.now();
+      const lastReset = gameState.lastAdReset || 0;
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (now - lastReset > oneDay) {
+        gameState.adCounts = { gem: 5, gold: 5, gacha: 3, speed: 3 };
+        gameState.lastAdReset = now;
+        saveGame();
       }
     }
 
     function saveGame() {
-      try {
-        localStorage.setItem('rinneData', JSON.stringify(gameState));
-      } catch (error) {
-        console.log('保存エラー:', error);
-      }
+      try { localStorage.setItem("rinneData", JSON.stringify(gameState)); } catch (error) { console.log("保存エラー:", error); }
     }
 
     function loadGame() {
       try {
-        const saved = localStorage.getItem('rinneData');
-
-        if (saved) {
-          const data = JSON.parse(saved);
-
-          gameState = {
-            life: Number(data.life) || 1,
-            bestDistance: Number(data.bestDistance) || 0,
-            gems: Number(data.gems) || 0,
-            gold: Number(data.gold) || 0
-          };
-        }
-      } catch (error) {
-        console.log('読み込みエラー:', error);
-      }
+        const saved = localStorage.getItem("rinneData");
+        if (saved) gameState = JSON.parse(saved);
+        normalizeGameState();
+      } catch (error) { console.log("読み込みエラー:", error); }
     }
 
     function resetData() {
-      if (!window.confirm('すべてのデータをリセットしますか？')) {
-        return;
-      }
-
+      if (!window.confirm("すべてのデータをリセットしますか？")) return;
       gameState = {
-        life: 1,
-        bestDistance: 0,
-        gems: 0,
-        gold: 0
+        life: 1, bestDistance: 0, bestPoint: 0, gold: 0, gem: 0, soul: 0,
+        soulUpgrades: { hp: 0, attack: 0, defense: 0, gold: 0 },
+        adCounts: { gem: 5, gold: 5, gacha: 3, speed: 3 },
+        lastAdReset: Date.now(),
+        inventory: { weapons: [], armors: [], accessories: [] },
+        equipped: { weapon: null, armor: null, accessory: null }
       };
-
       saveGame();
       updateTitleDisplay();
+      updateSoulScreen();
+      updateAdScreen();
+      updateGachaScreen();
+      updateEquipmentScreen();
     }
 
     function updateTitleDisplay() {
-      document.getElementById('displayLife').textContent =
-        gameState.life;
-
-      document.getElementById('displayBestDistance').textContent =
-        gameState.bestDistance + 'm';
-
-      document.getElementById('displayGems').textContent =
-        gameState.gems;
-
-      document.getElementById('displayGold').textContent =
-        gameState.gold;
+      document.getElementById("displayLife").textContent = gameState.life;
+      document.getElementById("displayBestDistance").textContent = gameState.bestDistance + "m";
+      document.getElementById("displayBestPoint").textContent = gameState.bestPoint;
+      document.getElementById("displayGold").textContent = gameState.gold;
+      document.getElementById("displayGem").textContent = gameState.gem;
+      document.getElementById("displaySoul").textContent = gameState.soul;
+      document.getElementById("displaySoulLevel").textContent = getTotalSoulUpgradeLevel();
     }
 
-    function startGame() {
-      stopGameLoop();
-
-      currentPlay = {
-        age: 20,
-        level: 1,
-        stage: 1,
-        distance: 0,
-        stageTime: 30,
-        heroHp: 100,
-        heroMaxHp: 100,
-        enemyHp: 50,
-        enemyMaxHp: 50,
-        isPlaying: true,
-        intervalId: null
-      };
-
-      switchScreen('gameScreen');
-      updateGameDisplay();
-      gameLoop();
+    function getTotalSoulUpgradeLevel() {
+      return gameState.soulUpgrades.hp + gameState.soulUpgrades.attack + gameState.soulUpgrades.defense + gameState.soulUpgrades.gold;
     }
 
     function switchScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(function(screen) {
-        screen.classList.remove('active');
-      });
-
-      document.getElementById(screenId).classList.add('active');
-    }
-
-    function updateGameDisplay() {
-      document.getElementById('gameAge').textContent =
-        currentPlay.age + '歳';
-
-      document.getElementById('gameLevel').textContent =
-        currentPlay.level;
-
-      document.getElementById('gameStage').textContent =
-        '1-' + currentPlay.stage;
-
-      document.getElementById('gameDistance').textContent =
-        currentPlay.distance + 'm';
-
-      const heroHpPercent =
-        Math.max(
-          0,
-          currentPlay.heroHp / currentPlay.heroMaxHp * 100
-        );
-
-      const enemyHpPercent =
-        Math.max(
-          0,
-          currentPlay.enemyHp / currentPlay.enemyMaxHp * 100
-        );
-
-      document.getElementById('heroHpBar').style.width =
-        heroHpPercent + '%';
-
-      document.getElementById('enemyHpBar').style.width =
-        enemyHpPercent + '%';
-
-      document.getElementById('timerBar').style.width =
-        currentPlay.stageTime / 30 * 100 + '%';
-
-      document.getElementById('timerValue').textContent =
-        currentPlay.stageTime + '秒';
-    }
-
-    function gameLoop() {
-      currentPlay.intervalId = window.setInterval(function() {
-        if (!currentPlay.isPlaying) {
-          stopGameLoop();
-          return;
-        }
-
-        currentPlay.stageTime--;
-        currentPlay.distance += 10;
-
-        if (currentPlay.stageTime % 2 === 0) {
-          currentPlay.enemyHp -= 10;
-
-          if (currentPlay.enemyHp <= 0) {
-            currentPlay.enemyHp = currentPlay.enemyMaxHp;
-            currentPlay.stage++;
-            currentPlay.level++;
-
-            document.getElementById('battleLog').textContent =
-              '敵を倒した！レベルアップ！';
-          } else {
-            document.getElementById('battleLog').textContent =
-              '勇者が敵を攻撃中！';
-          }
-
-          currentPlay.heroHp -= 5;
-
-          if (currentPlay.heroHp <= 0) {
-            currentPlay.heroHp = 0;
-            updateGameDisplay();
-            endGame();
-            return;
-          }
-        }
-
-        if (currentPlay.stageTime <= 0) {
-          currentPlay.stageTime = 30;
-
-          if (currentPlay.age < 70) {
-            currentPlay.age++;
-            currentPlay.heroMaxHp += 10;
-
-            /*
-             * ここではHPを回復しない。
-             * 現在HPはそのまま維持する。
-             */
-          }
-        }
-
-        if (currentPlay.age >= 70) {
-          endGame();
-          return;
-        }
-
-        updateGameDisplay();
-      }, 1000);
-    }
-
-    function stopGameLoop() {
-      if (currentPlay.intervalId !== null) {
-        window.clearInterval(currentPlay.intervalId);
-        currentPlay.intervalId = null;
-      }
-    }
-
-    function endGame() {
-      if (!currentPlay.isPlaying) {
-        return;
-      }
-
-      currentPlay.isPlaying = false;
-      stopGameLoop();
-
-      gameState.life++;
-
-      if (currentPlay.distance > gameState.bestDistance) {
-        gameState.bestDistance = currentPlay.distance;
-      }
-
-      const earnedGold =
-        Math.floor(currentPlay.distance / 100);
-
-      const earnedGems =
-        Math.floor(currentPlay.stage / 5);
-
-      gameState.gold += earnedGold;
-      gameState.gems += earnedGems;
-
-      saveGame();
-
-      document.getElementById('resultStage').textContent =
-        '1-' + currentPlay.stage;
-
-      document.getElementById('resultDistance').textContent =
-        currentPlay.distance + 'm';
-
-      document.getElementById('resultGold').textContent =
-        earnedGold;
-
-      document.getElementById('resultGems').textContent =
-        earnedGems;
-
-      switchScreen('resultScreen');
+      document.querySelectorAll(".screen").forEach(function(screen) { screen.classList.remove("active"); });
+      document.getElementById(screenId).classList.add("active");
     }
 
     function showTitle() {
+      stopGameLoop();
       updateTitleDisplay();
-      switchScreen('titleScreen');
+      updateAdScreen();
+      updateGachaScreen();
+      updateEquipmentScreen();
+      switchScreen("titleScreen");
     }
 
-    init();
+    function showEquipmentScreen() {
+      stopGameLoop();
+      updateEquipmentScreen();
+      switchScreen("equipmentScreen");
+    }
+
+    function showAdScreen() {
+      stopGameLoop();
+      updateAdScreen();
+      switchScreen("adScreen");
+    }
+
+    function showGachaScreen() {
+      stopGameLoop();
+      updateGachaScreen();
+      switchScreen("gachaScreen");
+    }
+
+    function showSoulScreen() {
+      stopGameLoop();
+      updateSoulScreen();
+      switchScreen("soulScreen");
+    }
+
+    function updateEquipmentScreen() {
+      const weaponAttack = gameState.equipped.weapon ? gameState.equipped.weapon.attack : 0;
+      const armorDefense = gameState.equipped.armor ? gameState.equipped.armor.defense : 0;
+      let accessoryHp = 0, accessoryAttack = 0, accessoryDefense = 0;
+      if (gameState.equipped.accessory) {
+        const bonus = gameState.equipped.accessory.bonus;
+        if (bonus.includes("HP")) accessoryHp = parseInt(bonus.replace("HP+", "")) || 0;
+        else if (bonus.includes("攻撃")) accessoryAttack = parseInt(bonus.replace("攻撃 +", "")) || 0;
+        else if (bonus.includes("防御")) accessoryDefense = parseInt(bonus.replace("防御 +", "")) || 0;
+      }
+      document.getElementById("statusAttack").textContent = "+" + (weaponAttack + accessoryAttack);
+      document.getElementById("statusDefense").textContent = "+" + (armorDefense + accessoryDefense);
+      document.getElementById("statusMaxHp").textContent = "+" + accessoryHp;
+      document.getElementById("weaponSlotItem").textContent = gameState.equipped.weapon ? gameState.equipped.weapon.name : "なし";
+      document.getElementById("armorSlotItem").textContent = gameState.equipped.armor ? gameState.equipped.armor.name : "なし";
+      document.getElementById("accessorySlotItem").textContent = gameState.equipped.accessory ? gameState.equipped.accessory.name : "なし";
+      document.getElementById("weaponSlot").classList.toggle("equipped", !!gameState.equipped.weapon);
+      document.getElementById("armorSlot").classList.toggle("equipped", !!gameState.equipped.armor);
+      document.getElementById("accessorySlot").classList.toggle("equipped", !!gameState.equipped.accessory);
+      renderInventorySection("weaponInventory", gameState.inventory.weapons, "weapon");
+      renderInventorySection("armorInventory", gameState.inventory.armors, "armor");
+      renderInventorySection("accessoryInventory", gameState.inventory.accessories, "accessory");
+    }
+
+    function updateAdScreen() {
+      document.getElementById("adGemCount").textContent = "残り " + gameState.adCounts.gem + " 回";
+      document.getElementById("adGoldCount").textContent = "残り " + gameState.adCounts.gold + " 回";
+      document.getElementById("adGachaCount").textContent = "残り " + gameState.adCounts.gacha + " 回";
+      document.getElementById("adSpeedCount").textContent = "残り " + gameState.adCounts.speed + " 回";
+      document.getElementById("watchGemAdButton").disabled = gameState.adCounts.gem <= 0;
+      document.getElementById("watchGoldAdButton").disabled = gameState.adCounts.gold <= 0;
+      document.getElementById("watchGachaAdButton").disabled = gameState.adCounts.gacha <= 0;
+      document.getElementById("watchSpeedAdButton").disabled = gameState.adCounts.speed <= 0;
+    }
+
+    function updateGachaScreen() {
+      document.getElementById("gachaGemCount").textContent = "所持ジェム：" + gameState.gem;
+      document.getElementById("freeGachaCount").textContent = "残り " + gameState.adCounts.gacha + " 回";
+      document.getElementById("pullWeaponGachaButton").disabled = gameState.gem < 1;
+      document.getElementById("pullArmorGachaButton").disabled = gameState.gem < 1;
+      document.getElementById("pullAccessoryGachaButton").disabled = gameState.gem < 1;
+      document.getElementById("pullFreeGachaButton").disabled = gameState.adCounts.gacha <= 0;
+    }
+
+    function renderInventorySection(elementId, items, type) {
+      const container = document.getElementById(elementId);
+      container.innerHTML = "";
+      if (items.length === 0) {
+        container.innerHTML = '<span style="color: var(--muted); font-size: 11px;">なし</span>';
+        return;
+      }
+      const itemCount = {};
+      items.forEach(function(item, index) {
+        const key = item.name;
+        if (!itemCount[key]) itemCount[key] = { item: item, count: 0, indices: [] };
+        itemCount[key].count++;
+        itemCount[key].indices.push(index);
+      });
+      Object.keys(itemCount).forEach(function(key) {
+        const data = itemCount[key];
+        const itemElement = document.createElement("div");
+        itemElement.className = "inventory-item " + data.item.rarity;
+        const isEquipped = gameState.equipped[type] && gameState.equipped[type].name === data.item.name;
+        if (isEquipped) itemElement.classList.add("equipped");
+        itemElement.textContent = data.item.icon + " " + data.item.name;
+        if (data.count > 1) {
+          const countSpan = document.createElement("span");
+          countSpan.className = "inventory-count";
+          countSpan.textContent = "×" + data.count;
+          itemElement.appendChild(countSpan);
+        }
+        itemElement.addEventListener("click", function() { equipItem(type, data.item); });
+        container.appendChild(itemElement);
+      });
+    }
+
+    function equipItem(type, item) {
+      if (gameState.equipped[type] && gameState.equipped[type].name === item.name) {
+        gameState.equipped[type] = null;
+        showNotification({ title: "装備解除！", equipment: item.name + " の装備を外した" });
+      } else {
+        gameState.equipped[type] = item;
+        showNotification({ title: "装備変更！", equipment: item.name + " を装備した" });
+      }
+      saveGame();
+      updateEquipmentScreen();
+    }
+
+    function watchAd(type) {
+      if (gameState.adCounts[type] <= 0) return;
+      const reward = AD_REWARDS[type];
+      if (type === "gem") {
+        gameState.gem += reward.reward;
+        gameState.adCounts.gem--;
+        showNotification({ title: "広告視聴完了！", gem: "ジェム +" + reward.reward });
+      } else if (type === "gold") {
+        gameState.gold += reward.reward;
+        gameState.adCounts.gold--;
+        showNotification({ title: "広告視聴完了！", gold: "ゴールド +" + reward.reward });
+      } else if (type === "gacha") {
+        gameState.adCounts.gacha--;
+        showNotification({ title: "広告視聴完了！", gem: "装備ガチャ 1 回分獲得" });
+      } else if (type === "speed") {
+        gameState.adCounts.speed--;
+        showNotification({ title: "広告視聴完了！", gem: "2 倍速 1 時間分獲得（仮）" });
+      }
+      saveGame();
+      updateAdScreen();
+      updateTitleDisplay();
+    }
+
+    function pullGacha(gachaType) {
+      const cost = 1;
+      if (gameState.gem < cost) return;
+      gameState.gem -= cost;
+      const items = GACHA_ITEMS[gachaType];
+      const item = drawGachaItem(items);
+      if (gachaType === "accessory") gameState.inventory.accessories.push(item);
+      else gameState.inventory[gachaType + "s"].push(item);
+      showGachaResult(item);
+      saveGame();
+      updateGachaScreen();
+      updateTitleDisplay();
+    }
+
+    function pullAccessoryGacha() {
+      const cost = 1;
+      if (gameState.gem < cost) return;
+      gameState.gem -= cost;
+      const items = GACHA_ITEMS.accessory;
+      const item = drawGachaItem(items);
+      gameState.inventory.accessories.push(item);
+      showGachaResult(item);
+      saveGame();
+      updateGachaScreen();
+      updateTitleDisplay();
+    }
+
+    function pullFreeGacha() {
+      if (gameState.adCounts.gacha <= 0) return;
+      gameState.adCounts.gacha--;
+      const types = ["weapon", "armor", "accessory"];
+      const randomType = types[Math.floor(Math.random() * types.length)];
+      const items = GACHA_ITEMS[randomType];
+      const item = drawGachaItem(items);
+      if (randomType === "accessory") gameState.inventory.accessories.push(item);
+      else gameState.inventory[randomType + "s"].push(item);
+      showGachaResult(item);
+      saveGame();
+      updateAdScreen();
+      updateGachaScreen();
+      updateTitleDisplay();
+    }
+
+    function drawGachaItem(items) {
+      const rand = Math.random() * 100;
+      let rarityPool;
+      if (rand < 5) rarityPool = items.filter(function(item) { return item.rarity === "ssr"; });
+      else if (rand < 20) rarityPool = items.filter(function(item) { return item.rarity === "sr"; });
+      else if (rand < 50) rarityPool = items.filter(function(item) { return item.rarity === "rare"; });
+      else rarityPool = items.filter(function(item) { return item.rarity === "normal"; });
+      if (rarityPool.length === 0) rarityPool = items.filter(function(item) { return item.rarity === "normal"; });
+      return rarityPool[Math.floor(Math.random() * rarityPool.length)];
+    }
+
+    function showGachaResult(item) {
+      document.getElementById("gachaResultIcon").textContent = item.icon;
+      document.getElementById("gachaResultName").textContent = item.name;
+      const rarityText = { normal: "ノーマル", rare: "レア", sr: "SR", ssr: "SSR" };
+      document.getElementById("gachaResultRarity").textContent = rarityText[item.rarity];
+      const resultItem = document.getElementById("gachaResultItem");
+      resultItem.className = "gacha-result-item " + item.rarity;
+      document.getElementById("gachaResult").classList.add("active");
+    }
+
+    function closeGachaResult() {
+      document.getElementById("gachaResult").classList.remove("active");
+    }
+
+    function showJobSelect() {
+      selectedJobKey = null;
+      selectedCompanions = [];
+      selectedPetKey = "slime";
+      document.querySelectorAll(".job-card").forEach(function(card) { card.classList.remove("selected"); });
+      document.getElementById("jobStatus").textContent = "職業を選択してください";
+      document.getElementById("toCompanionButton").disabled = true;
+      switchScreen("jobSelectScreen");
+    }
+
+    function selectJob(jobKey) {
+      if (!JOBS[jobKey]) return;
+      selectedJobKey = jobKey;
+      document.querySelectorAll(".job-card").forEach(function(card) { card.classList.toggle("selected", card.dataset.job === jobKey); });
+      document.getElementById("jobStatus").textContent = JOBS[jobKey].icon + " " + JOBS[jobKey].name + "を選択中";
+      document.getElementById("toCompanionButton").disabled = false;
+    }
+
+    function showCompanionSelect() {
+      selectedCompanions = [];
+      renderCompanionGrid();
+      updateCompanionCount();
+      switchScreen("companionSelectScreen");
+    }
+
+    function renderCompanionGrid() {
+      const grid = document.getElementById("companionGrid");
+      grid.innerHTML = "";
+      const companionJobs = ["thief", "priest", "mage"];
+      companionJobs.forEach(function(jobKey) {
+        const job = JOBS[jobKey];
+        const card = document.createElement("button");
+        card.className = "job-card";
+        card.dataset.job = jobKey;
+        card.innerHTML = '<span class="job-icon">' + job.icon + '</span><span class="job-name">' + job.name + '</span><span class="job-description">' + job.skillName + '</span>';
+        card.addEventListener("click", function(e) { e.preventDefault(); toggleCompanion(jobKey); });
+        grid.appendChild(card);
+      });
+    }
+
+    function toggleCompanion(jobKey) {
+      const index = selectedCompanions.indexOf(jobKey);
+      if (index > -1) selectedCompanions.splice(index, 1);
+      else if (selectedCompanions.length < 3) selectedCompanions.push(jobKey);
+      renderCompanionGrid();
+      updateCompanionCount();
+    }
+
+    function updateCompanionCount() {
+      document.getElementById("companionCount").textContent = "選択中：" + selectedCompanions.length + "人";
+      const cards = document.querySelectorAll("#companionGrid .job-card");
+      cards.forEach(function(card) {
+        const jobKey = card.dataset.job;
+        if (selectedCompanions.indexOf(jobKey) > -1) card.classList.add("selected");
+        else card.classList.remove("selected");
+      });
+    }
+
+    function showPetSelect() {
+      renderPetGrid();
+      switchScreen("petSelectScreen");
+    }
+
+    function renderPetGrid() {
+      const cards = document.querySelectorAll("#petGrid .pet-card");
+      cards.forEach(function(card) {
+        const petKey = card.dataset.pet;
+        if (petKey === selectedPetKey) card.classList.add("selected");
+        else card.classList.remove("selected");
+      });
+    }
+
+    function selectPet(petKey) {
+      selectedPetKey = petKey;
+      renderPetGrid();
+    }
+
+    function getSoulUpgradeCost(type) {
+      const upgrade = SOUL_UPGRADES[type];
+      const level = gameState.soulUpgrades[type];
+      return Math.floor(upgrade.baseCost * Math.pow(upgrade.costGrowth, level));
+    }
+
+    function updateSoulScreen() {
+      document.getElementById("soulScreenSoul").textContent = gameState.soul;
+      updateSoulUpgradeCard("hp", "hpUpgradeLevel", "hpUpgradeCost", "hpUpgradeButton");
+      updateSoulUpgradeCard("attack", "attackUpgradeLevel", "attackUpgradeCost", "attackUpgradeButton");
+      updateSoulUpgradeCard("defense", "defenseUpgradeLevel", "defenseUpgradeCost", "defenseUpgradeButton");
+      updateSoulUpgradeCard("gold", "goldUpgradeLevel", "goldUpgradeCost", "goldUpgradeButton");
+    }
+
+    function updateSoulUpgradeCard(type, levelId, costId, buttonId) {
+      const level = gameState.soulUpgrades[type];
+      const cost = getSoulUpgradeCost(type);
+      document.getElementById(levelId).textContent = "Lv" + level;
+      document.getElementById(costId).textContent = "必要魂：" + cost;
+      document.getElementById(buttonId).disabled = gameState.soul < cost;
+    }
+
+    function buySoulUpgrade(type) {
+      const cost = getSoulUpgradeCost(type);
+      if (gameState.soul < cost) return;
+      gameState.soul -= cost;
+      gameState.soulUpgrades[type]++;
+      saveGame();
+      updateTitleDisplay();
+      updateSoulScreen();
+    }
+
+    function getEquipmentForAge(age) {
+      let selected = AGE_EQUIPMENT[0];
+      AGE_EQUIPMENT.forEach(function(equipment) { if (age >= equipment.age) selected = equipment; });
+      return selected;
+    }
+
+    function applyEquipmentForAge(showMessage) {
+      const nextEquipment = getEquipmentForAge(currentPlay.age);
+      const previousEquipment = currentPlay.equipment;
+      const changed = !previousEquipment || previousEquipment.age !== nextEquipment.age;
+      currentPlay.equipment = nextEquipment;
+      currentPlay.equipmentAttack = nextEquipment.attack;
+      currentPlay.equipmentMaxHp = nextEquipment.maxHp;
+      currentPlay.equipmentDefense = nextEquipment.defense;
+      const job = JOBS[currentPlay.jobKey];
+      const oldMaxHp = currentPlay.heroMaxHp;
+      const baseMaxHp = job.maxHp + gameState.soulUpgrades.hp * 10 + (currentPlay.level - 1) * 10;
+      currentPlay.heroMaxHp = baseMaxHp + currentPlay.equipmentMaxHp;
+      if (currentPlay.heroMaxHp > oldMaxHp) currentPlay.heroHp += currentPlay.heroMaxHp - oldMaxHp;
+      currentPlay.heroHp = Math.min(currentPlay.heroHp, currentPlay.heroMaxHp);
+      if (showMessage && changed) {
+        showNotification({ title: currentPlay.age + "歳！装備更新！", equipment: nextEquipment.weapon + " / " + nextEquipment.armor + " / " + nextEquipment.accessory });
+      }
+    }
+
+    function updateEquipmentDisplay() {
+      const equipment = currentPlay.equipment;
+      document.getElementById("equipmentWeapon").textContent = "武器：" + equipment.weapon;
+      document.getElementById("equipmentArmor").textContent = "防具：" + equipment.armor;
+      document.getElementById("equipmentAccessory").textContent = "アクセ：" + equipment.accessory;
+      document.getElementById("equipmentBonus").textContent = "効果：攻撃+" + equipment.attack + " / 最大 HP+" + equipment.maxHp + " / 防御+" + equipment.defense;
+    }
+
+    function createCompanion(jobKey, index) {
+      const job = JOBS[jobKey];
+      return {
+        id: ++companionIdCounter, jobKey: jobKey, jobName: job.name, jobIcon: job.icon,
+        attack: job.attack + gameState.soulUpgrades.attack * 2, attackInterval: job.attackInterval,
+        skillName: job.skillName, skillCooldown: job.skillCooldown, attackProgress: 0, skillProgress: 0, element: null, index: index
+      };
+    }
+
+    function createCompanionElement(companion) {
+      const gameArea = document.getElementById("gameArea");
+      if (!gameArea) return;
+      const companionElement = document.createElement("div");
+      companionElement.className = "companion";
+      companionElement.id = "companion-" + companion.id;
+      const leftPosition = 6 + (companion.index * 5);
+      companionElement.style.left = leftPosition + "%";
+      companionElement.innerHTML = '<span id="companion-icon-' + companion.id + '">' + companion.jobIcon + "</span>";
+      gameArea.appendChild(companionElement);
+      companion.element = companionElement;
+    }
+
+    function updateCompanionAppearance(companion) {
+      if (!companion.element) return;
+      const iconElement = document.getElementById("companion-icon-" + companion.id);
+      if (!iconElement) return;
+      let icon = companion.jobIcon;
+      if (currentPlay.age >= 30) icon = "🧔‍♂️";
+      else if (currentPlay.age >= 50) icon = "🧓";
+      else if (currentPlay.age >= 60) icon = "👴";
+      iconElement.textContent = icon;
+      if (currentPlay.age >= 50) companion.element.classList.add("old");
+      else companion.element.classList.remove("old");
+    }
+
+    function removeCompanionElement(companion) {
+      if (companion.element) companion.element.remove();
+    }
+
+    function createPet(petKey) {
+      if (petKey === "none" || !PETS[petKey]) return null;
+      const petData = PETS[petKey];
+      const evolution = getPetEvolution(petKey, 20);
+      return { id: ++petIdCounter, key: petKey, name: petData.name, attack: petData.attack, evolution: evolution, element: null, attackProgress: 0 };
+    }
+
+    function getPetEvolution(petKey, age) {
+      const petData = PETS[petKey];
+      if (!petData || !petData.evolutions || petData.evolutions.length === 0) return { icon: "", name: "" };
+      let selected = petData.evolutions[0];
+      petData.evolutions.forEach(function(evo) { if (age >= evo.age) selected = evo; });
+      return selected;
+    }
+
+    function createPetElement(pet) {
+      if (!pet) return;
+      const gameArea = document.getElementById("gameArea");
+      if (!gameArea) return;
+      const petElement = document.createElement("div");
+      petElement.className = "pet";
+      petElement.id = "pet-" + pet.id;
+      petElement.innerHTML = '<span id="pet-icon-' + pet.id + '">' + pet.evolution.icon + "</span>";
+      gameArea.appendChild(petElement);
+      pet.element = petElement;
+    }
+
+    function updatePetAppearance(pet) {
+      if (!pet || !pet.element) return;
+      const iconElement = document.getElementById("pet-icon-" + pet.id);
+      if (!iconElement) return;
+      const evolution = getPetEvolution(pet.key, currentPlay.age);
+      iconElement.textContent = evolution.icon;
+      if (currentPlay.age >= 50) pet.element.classList.add("old");
+      else pet.element.classList.remove("old");
+    }
+
+    function removePetElement(pet) {
+      if (pet && pet.element) pet.element.remove();
+    }
+
+    function startGame() {
+      if (!selectedJobKey || !JOBS[selectedJobKey]) return;
+      stopGameLoop();
+      const job = JOBS[selectedJobKey];
+      const permanentHp = gameState.soulUpgrades.hp * 10;
+      enemyIdCounter = 0;
+      companionIdCounter = 0;
+      petIdCounter = 0;
+      lastPetEvolutionAge = 20;
+      combatLog = [];
+      updateCombatLogDisplay();
+      currentPlay = {
+        jobKey: selectedJobKey, jobName: job.name, jobIcon: job.icon, age: 20, ageTimer: 0, level: 1, experience: 0, nextExperience: 100,
+        stageNumber: 1, areaNumber: 1, stageInArea: 1, stageTime: 30, distance: 0, distanceProgress: 0, point: 0,
+        heroHp: job.maxHp + permanentHp, heroMaxHp: job.maxHp + permanentHp, equipment: AGE_EQUIPMENT[0],
+        equipmentAttack: 0, equipmentMaxHp: 0, equipmentDefense: 0, companions: [], pet: createPet(selectedPetKey), enemies: [],
+        heroAttackProgress: 0, skillProgress: 0, spawnCheckTimer: 0, gameSecondProgress: 0,
+        lastFrameTime: performance.now(), animationId: null, isPlaying: true
+      };
+      applyEquipmentForAge(false);
+      switchScreen("gameScreen");
+      updateHeroAppearance();
+      selectedCompanions.forEach(function(cJobKey, index) {
+        const companion = createCompanion(cJobKey, index);
+        currentPlay.companions.push(companion);
+        createCompanionElement(companion);
+      });
+      if (currentPlay.pet) createPetElement(currentPlay.pet);
+      for (let i = 0; i < 3; i++) spawnEnemy("first", i * 85);
+      updateGameDisplay();
+      currentPlay.animationId = window.requestAnimationFrame(animationLoop);
+    }
+
+    function getStageLabel() {
+      return currentPlay.areaNumber + "-" + currentPlay.stageInArea;
+    }
+
+    function updateHeroAppearance() {
+      const hero = document.getElementById("hero");
+      const heroIcon = document.getElementById("heroIcon");
+      let icon = "🧑‍⚔️";
+      if (currentPlay.age >= 60) icon = "👴";
+      else if (currentPlay.age >= 50) icon = "🧓";
+      else if (currentPlay.age >= 30) icon = "🧔‍♂️";
+      heroIcon.textContent = icon;
+      if (currentPlay.age >= 50) hero.classList.add("old");
+      else hero.classList.remove("old");
+    }
+
+    function chooseMonsterKey() {
+      const stage = currentPlay.stageNumber;
+      if (stage % 10 === 0) return "boss";
+      if (stage % 5 === 0) return "miniboss";
+      const candidates = ["slime", "goblin", "orc"];
+      const totalWeight = candidates.reduce(function(total, key) { return total + MONSTERS[key].spawnWeight; }, 0);
+      let randomValue = Math.random() * totalWeight;
+      for (const key of candidates) {
+        randomValue -= MONSTERS[key].spawnWeight;
+        if (randomValue <= 0) return key;
+      }
+      return "slime";
+    }
+
+    function getEarlyGameScale() {
+      const stage = currentPlay.stageNumber;
+      if (stage <= 3) return 0.6;
+      if (stage <= 6) return 0.8;
+      if (stage <= 9) return 0.95;
+      return 1;
+    }
+
+    function getMaxEnemies() {
+      const stage = currentPlay.stageNumber;
+      if (stage <= 3) return 8;
+      if (stage <= 6) return 12;
+      if (stage <= 9) return 16;
+      return 20;
+    }
+
+    function getStageScale() {
+      return (1 + (currentPlay.stageNumber - 1) * 0.04) * getEarlyGameScale();
+    }
+
+    function createEnemyElement(enemy) {
+      const gameArea = document.getElementById("gameArea");
+      const enemyElement = document.createElement("div");
+      enemyElement.className = "enemy-unit";
+      enemyElement.id = "enemy-" + enemy.id;
+      enemyElement.innerHTML = '<span class="enemy-icon">' + enemy.icon + "</span>";
+      if (enemy.boss) enemyElement.classList.add("boss");
+      const hpDisplay = document.createElement("div");
+      hpDisplay.className = "enemy-hp-display";
+      hpDisplay.id = "enemy-hp-" + enemy.id;
+      if (enemy.boss) hpDisplay.classList.add("boss");
+      hpDisplay.innerHTML = '<div class="enemy-hp-title">HP</div><div class="enemy-hp-bar"><div class="enemy-hp-fill" id="enemy-hp-fill-' + enemy.id + '"></div></div><div class="enemy-hp-number" id="enemy-hp-number-' + enemy.id + '"></div>';
+      gameArea.appendChild(enemyElement);
+      gameArea.appendChild(hpDisplay);
+      enemy.element = enemyElement;
+      enemy.hpDisplay = hpDisplay;
+    }
+
+    function spawnEnemy(reason, additionalX) {
+      const gameArea = document.getElementById("gameArea");
+      if (!gameArea) return;
+      const monsterKey = chooseMonsterKey();
+      const baseMonster = MONSTERS[monsterKey];
+      const scale = getStageScale();
+      const id = ++enemyIdCounter;
+      const enemy = {
+        id: id, lane: id % 3, key: monsterKey, name: baseMonster.name, icon: baseMonster.icon,
+        hp: Math.max(1, Math.floor(baseMonster.hp * scale)),
+        maxHp: Math.max(1, Math.floor(baseMonster.hp * scale)),
+        attack: Math.max(1, Math.floor(baseMonster.attack * scale)),
+        point: Math.max(1, Math.floor(baseMonster.point * scale)),
+        gold: Math.max(1, Math.floor(baseMonster.gold * scale)),
+        experience: Math.max(1, Math.floor(baseMonster.experience * scale)),
+        speed: baseMonster.speed, attackInterval: baseMonster.attackInterval, attackTimer: Math.random() * 0.8,
+        boss: Boolean(baseMonster.boss), special: baseMonster.special, contacted: false, buffed: false,
+        x: gameArea.clientWidth + 80 + (additionalX || 0) + Math.random() * 100, element: null, hpDisplay: null
+      };
+      currentPlay.enemies.push(enemy);
+      createEnemyElement(enemy);
+      renderEnemy(enemy);
+      if (reason === "extra") document.getElementById("battleLog").textContent = "敵の群れが追加出現！";
+      if (reason === "first") document.getElementById("battleLog").textContent = "敵の群れが右から近づいてくる……";
+    }
+
+    function removeEnemyElement(enemy) {
+      if (enemy.element) enemy.element.remove();
+      if (enemy.hpDisplay) enemy.hpDisplay.remove();
+    }
+
+    function getEnemyLaneOffset(enemy) {
+      if (enemy.lane === 0) return 0;
+      if (enemy.lane === 1) return 22;
+      return 44;
+    }
+
+    function renderEnemy(enemy) {
+      if (!enemy.element || !enemy.hpDisplay) return;
+      const laneOffset = getEnemyLaneOffset(enemy);
+      const leftPosition = enemy.x + laneOffset;
+      enemy.element.style.left = leftPosition + "px";
+      enemy.element.classList.toggle("contacting", enemy.contacted);
+      enemy.element.classList.toggle("buff-target", enemy.buffed);
+      const enemyWidth = enemy.element.offsetWidth;
+      const enemyCenterX = leftPosition + enemyWidth / 2;
+      const hpTop = enemy.element.offsetTop - enemy.hpDisplay.offsetHeight - 5;
+      enemy.hpDisplay.style.left = enemyCenterX + "px";
+      enemy.hpDisplay.style.top = Math.max(3, hpTop) + "px";
+      const hpPercent = Math.max(0, enemy.hp / enemy.maxHp * 100);
+      const hpFill = document.getElementById("enemy-hp-fill-" + enemy.id);
+      const hpNumber = document.getElementById("enemy-hp-number-" + enemy.id);
+      if (hpFill) hpFill.style.width = hpPercent + "%";
+      if (hpNumber) hpNumber.textContent = Math.max(0, enemy.hp) + "/" + enemy.maxHp;
+    }
+
+    function isEnemyContactingHero(enemy) {
+      const hero = document.getElementById("hero");
+      if (!hero || !enemy.element) return false;
+      const heroRect = hero.getBoundingClientRect();
+      const enemyRect = enemy.element.getBoundingClientRect();
+      return heroRect.left < enemyRect.right && heroRect.right > enemyRect.left && heroRect.top < enemyRect.bottom && heroRect.bottom > enemyRect.top;
+    }
+
+    function moveEnemies(deltaSeconds) {
+      currentPlay.enemies.forEach(function(enemy) {
+        if (!enemy.contacted) {
+          enemy.x -= enemy.speed * deltaSeconds;
+          if (isEnemyContactingHero(enemy)) {
+            enemy.contacted = true;
+            document.getElementById("battleLog").textContent = enemy.name + "が群れに合流！戦闘開始！";
+          }
+        }
+        renderEnemy(enemy);
+      });
+    }
+
+    function updateEnemySpawning(deltaSeconds) {
+      currentPlay.spawnCheckTimer += deltaSeconds;
+      if (currentPlay.spawnCheckTimer < 1) return;
+      currentPlay.spawnCheckTimer = 0;
+      const maxEnemies = getMaxEnemies();
+      const currentEnemyCount = currentPlay.enemies.length;
+      if (currentEnemyCount >= maxEnemies) return;
+      if (Math.random() < 0.75) {
+        const freeSlots = maxEnemies - currentEnemyCount;
+        const spawnCount = Math.min(freeSlots, 1 + Math.floor(Math.random() * 3));
+        for (let i = 0; i < spawnCount; i++) spawnEnemy("extra", i * 60);
+      }
+    }
+
+    function getContactedEnemies() {
+      return currentPlay.enemies.filter(function(enemy) { return enemy.contacted; });
+    }
+
+    function getTargetEnemy() {
+      const contactedEnemies = getContactedEnemies();
+      if (contactedEnemies.length > 0) {
+        contactedEnemies.sort(function(a, b) { return a.x - b.x; });
+        return contactedEnemies[0];
+      }
+      return null;
+    }
+
+    function increaseAge() {
+      currentPlay.ageTimer++;
+      if (currentPlay.ageTimer < 3) return;
+      currentPlay.ageTimer = 0;
+      currentPlay.age++;
+      applyEquipmentForAge(true);
+      currentPlay.companions.forEach(function(companion) { updateCompanionAppearance(companion); });
+      if (currentPlay.pet && currentPlay.pet.key !== "none") {
+        const currentEvolution = getPetEvolution(currentPlay.pet.key, currentPlay.age);
+        if (currentPlay.age >= 30 && currentPlay.age % 10 === 0 && currentPlay.age !== lastPetEvolutionAge) {
+          updatePetAppearance(currentPlay.pet);
+          showNotification({ title: "ペット進化！", pet: currentEvolution.name + "に進化した！" });
+          lastPetEvolutionAge = currentPlay.age;
+        } else if (currentPlay.age === 20) {
+          updatePetAppearance(currentPlay.pet);
+        }
+      }
+      document.getElementById("battleLog").textContent = currentPlay.age + "歳になった！";
+    }
+
+    function addExperience(amount) {
+      currentPlay.experience += amount;
+      while (currentPlay.experience >= currentPlay.nextExperience) {
+        currentPlay.experience -= currentPlay.nextExperience;
+        currentPlay.level++;
+        currentPlay.nextExperience = Math.floor(currentPlay.nextExperience * 1.25);
+        applyEquipmentForAge(false);
+        showNotification({ title: "LEVEL UP!", equipment: "Lv" + (currentPlay.level - 1) + " → Lv" + currentPlay.level + " 攻撃+2 最大 HP+10" });
+      }
+    }
+
+    function showNotification(data) {
+      const notification = document.getElementById("gameNotification");
+      const title = document.getElementById("notificationTitle");
+      const exp = document.getElementById("notificationExp");
+      const gold = document.getElementById("notificationGold");
+      const equipment = document.getElementById("notificationEquipment");
+      const pet = document.getElementById("notificationPet");
+      const gem = document.getElementById("notificationGem");
+      if (notificationTimer) clearTimeout(notificationTimer);
+      title.textContent = data.title || "";
+      exp.textContent = data.exp || "";
+      gold.textContent = data.gold || "";
+      equipment.textContent = data.equipment || "";
+      pet.textContent = data.pet || "";
+      gem.textContent = data.gem || "";
+      notification.classList.remove("show");
+      void notification.offsetWidth;
+      notification.classList.add("show");
+      notificationTimer = setTimeout(function() { notification.classList.remove("show"); }, 2300);
+    }
+
+    function playSkillEffect(jobKey) {
+      const effect = document.getElementById("skillEffect");
+      effect.className = "skill-effect";
+      void effect.offsetWidth;
+      effect.classList.add(jobKey);
+      effect.classList.add("active");
+      setTimeout(function() { effect.className = "skill-effect"; }, 900);
+    }
+
+    function getTotalAttack() {
+      const job = JOBS[currentPlay.jobKey];
+      let gachaAttack = 0;
+      if (gameState.equipped.weapon) gachaAttack = gameState.equipped.weapon.attack || 0;
+      if (gameState.equipped.accessory) {
+        const bonus = gameState.equipped.accessory.bonus;
+        if (bonus && bonus.includes("攻撃")) gachaAttack += parseInt(bonus.replace("攻撃 +", "")) || 0;
+      }
+      return job.attack + currentPlay.equipmentAttack + gachaAttack + gameState.soulUpgrades.attack * 2 + currentPlay.level * 2;
+    }
+
+    function getTotalDefense() {
+      let gachaDefense = 0;
+      if (gameState.equipped.armor) gachaDefense = gameState.equipped.armor.defense || 0;
+      if (gameState.equipped.accessory) {
+        const bonus = gameState.equipped.accessory.bonus;
+        if (bonus && bonus.includes("防御")) gachaDefense += parseInt(bonus.replace("防御 +", "")) || 0;
+      }
+      return currentPlay.equipmentDefense + gachaDefense + gameState.soulUpgrades.defense;
+    }
+
+    function getGoldMultiplier() {
+      return 1 + gameState.soulUpgrades.gold * 0.1;
+    }
+
+    function addCombatLog(message, type) {
+      combatLog.push({ message: message, type: type });
+      if (combatLog.length > 20) combatLog.shift();
+      updateCombatLogDisplay();
+    }
+
+    function updateCombatLogDisplay() {
+      const logList = document.getElementById("combatLogList");
+      logList.innerHTML = "";
+      combatLog.slice(-10).forEach(function(log) {
+        const entry = document.createElement("div");
+        entry.className = "combat-log-entry " + log.type;
+        entry.textContent = log.message;
+        logList.appendChild(entry);
+      });
+      logList.scrollTop = logList.scrollHeight;
+    }
+
+    function heroAttack(deltaSeconds) {
+      const target = getTargetEnemy();
+      if (!target) {
+        currentPlay.heroAttackProgress = 0;
+        return;
+      }
+      const job = JOBS[currentPlay.jobKey];
+      currentPlay.heroAttackProgress += deltaSeconds / job.attackInterval;
+      if (currentPlay.heroAttackProgress < 1) return;
+      currentPlay.heroAttackProgress -= 1;
+      const damage = getTotalAttack();
+      target.hp -= damage;
+      addCombatLog(job.name + "の攻撃！" + target.name + "に" + damage + "ダメージ", "damage");
+      if (job.healAmount > 0) {
+        currentPlay.heroHp = Math.min(currentPlay.heroHp + job.healAmount, currentPlay.heroMaxHp);
+        addCombatLog(job.name + "は" + job.healAmount + "回復した", "heal");
+      }
+      renderEnemy(target);
+      if (target.hp <= 0) defeatEnemy(target);
+    }
+
+    function companionAttack(companion, deltaSeconds) {
+      const target = getTargetEnemy();
+      if (!target) {
+        companion.attackProgress = 0;
+        return;
+      }
+      companion.attackProgress += deltaSeconds / companion.attackInterval;
+      if (companion.attackProgress < 1) return;
+      companion.attackProgress -= 1;
+      const damage = companion.attack;
+      target.hp -= damage;
+      addCombatLog(companion.jobName + "の攻撃！" + target.name + "に" + damage + "ダメージ", "damage");
+      renderEnemy(target);
+      if (target.hp <= 0) defeatEnemy(target);
+    }
+
+    function petAttack(pet, deltaSeconds) {
+      if (!pet) return;
+      const target = getTargetEnemy();
+      if (!target) return;
+      pet.attackProgress = (pet.attackProgress || 0) + deltaSeconds;
+      if (pet.attackProgress < 2) return;
+      pet.attackProgress = 0;
+      const damage = pet.attack;
+      target.hp -= damage;
+      addCombatLog(pet.name + "の攻撃！" + target.name + "に" + damage + "ダメージ", "damage");
+      renderEnemy(target);
+      if (target.hp <= 0) defeatEnemy(target);
+    }
+
+    function applyDamageToEnemies(targets, damage) {
+      const deadEnemies = [];
+      targets.forEach(function(enemy) {
+        const exists = currentPlay.enemies.some(function(item) { return item.id === enemy.id; });
+        if (!exists) return;
+        enemy.hp -= damage;
+        renderEnemy(enemy);
+        if (enemy.hp <= 0) deadEnemies.push(enemy);
+      });
+      deadEnemies.forEach(function(enemy) { defeatEnemy(enemy); });
+      return deadEnemies.length;
+    }
+
+    function useSkill() {
+      const job = JOBS[currentPlay.jobKey];
+      const contactedEnemies = getContactedEnemies();
+      if (currentPlay.enemies.length === 0) {
+        currentPlay.skillProgress = 0;
+        return;
+      }
+      if (contactedEnemies.length === 0) {
+        currentPlay.skillProgress = 1;
+        return;
+      }
+      if (currentPlay.jobKey === "warrior") {
+        const damage = Math.floor(getTotalAttack() * 2.5);
+        const killed = applyDamageToEnemies(contactedEnemies, damage);
+        playSkillEffect("warrior");
+        addCombatLog("⚔️ 回転斬り！" + contactedEnemies.length + "体へ" + damage + "ダメージ", "skill");
+        showNotification({ title: "⚔️ 回転斬り！", exp: contactedEnemies.length + "体へ " + damage + "ダメージ", gold: killed > 0 ? killed + "体撃破！" : "" });
+      }
+      if (currentPlay.jobKey === "mage") {
+        const targets = currentPlay.enemies.slice();
+        const damage = Math.floor(getTotalAttack() * 2.2);
+        const killed = applyDamageToEnemies(targets, damage);
+        playSkillEffect("mage");
+        addCombatLog("☄️ メテオ！" + targets.length + "体へ" + damage + "ダメージ", "skill");
+        showNotification({ title: "☄️ メテオ！", exp: targets.length + "体へ " + damage + "ダメージ", gold: killed > 0 ? killed + "体撃破！" : "" });
+      }
+      if (currentPlay.jobKey === "thief") {
+        const targets = contactedEnemies.slice().sort(function(a, b) { return a.x - b.x; }).slice(0, 3);
+        const damage = Math.floor(getTotalAttack() * 3);
+        const killed = applyDamageToEnemies(targets, damage);
+        playSkillEffect("thief");
+        addCombatLog("🗡️ 乱舞！" + targets.length + "体へ" + damage + "ダメージ", "skill");
+        showNotification({ title: "🗡️ 乱舞！", exp: targets.length + "体へ " + damage + "ダメージ", gold: killed > 0 ? killed + "体撃破！" : "" });
+      }
+      if (currentPlay.jobKey === "priest") {
+        const damage = Math.floor(getTotalAttack() * 1.7);
+        const heal = Math.floor(currentPlay.heroMaxHp * 0.3);
+        const killed = applyDamageToEnemies(contactedEnemies, damage);
+        currentPlay.heroHp = Math.min(currentPlay.heroHp + heal, currentPlay.heroMaxHp);
+        playSkillEffect("priest");
+        addCombatLog("✨ 聖なる波動！" + contactedEnemies.length + "体へ" + damage + "ダメージ、" + heal + "回復", "skill");
+        showNotification({ title: "✨ 聖なる波動！", exp: contactedEnemies.length + "体へ " + damage + "ダメージ", gold: "HP +" + heal, equipment: killed > 0 ? killed + "体撃破！" : "" });
+      }
+      currentPlay.skillProgress = 0;
+      document.getElementById("battleLog").textContent = job.skillName + "が発動！";
+    }
+
+    function companionUseSkill(companion) {
+      const contactedEnemies = getContactedEnemies();
+      if (currentPlay.enemies.length === 0) {
+        companion.skillProgress = 0;
+        return;
+      }
+      if (contactedEnemies.length === 0) {
+        companion.skillProgress = 1;
+        return;
+      }
+      const damage = Math.floor(companion.attack * 2);
+      const killed = applyDamageToEnemies(contactedEnemies, damage);
+      if (killed > 0) {
+        addCombatLog(companion.jobName + "のスキル！" + killed + "体撃破！", "skill");
+        document.getElementById("battleLog").textContent = companion.jobName + "のスキル！" + killed + "体撃破！";
+      }
+      companion.skillProgress = 0;
+    }
+
+    function updateSkill(deltaSeconds) {
+      const job = JOBS[currentPlay.jobKey];
+      if (currentPlay.enemies.length === 0) {
+        currentPlay.skillProgress = 0;
+        return;
+      }
+      currentPlay.skillProgress += deltaSeconds / job.skillCooldown;
+      if (currentPlay.skillProgress >= 1) {
+        currentPlay.skillProgress = 1;
+        if (getContactedEnemies().length > 0) useSkill();
+      }
+    }
+
+    function updateCompanionSkill(companion, deltaSeconds) {
+      if (currentPlay.enemies.length === 0) {
+        companion.skillProgress = 0;
+        return;
+      }
+      companion.skillProgress += deltaSeconds / companion.skillCooldown;
+      if (companion.skillProgress >= 1) {
+        companion.skillProgress = 1;
+        if (getContactedEnemies().length > 0) companionUseSkill(companion);
+      }
+    }
+
+    function enemyAttackAll(deltaSeconds) {
+      let attackerCount = 0;
+      let totalDamage = 0;
+      const contactedEnemies = getContactedEnemies();
+      const bufferCount = contactedEnemies.filter(function(enemy) { return enemy.special === "buffer"; }).length;
+      const multiBossCount = contactedEnemies.filter(function(enemy) { return enemy.special === "multi"; }).length;
+      currentPlay.enemies.forEach(function(enemy) {
+        enemy.buffed = false;
+        if (!enemy.contacted) {
+          renderEnemy(enemy);
+          return;
+        }
+        enemy.attackTimer += deltaSeconds;
+        if (enemy.attackTimer >= enemy.attackInterval) {
+          enemy.attackTimer -= enemy.attackInterval;
+          let attackPower = enemy.attack;
+          if (bufferCount > 0 && enemy.special !== "buffer") {
+            attackPower *= 1 + bufferCount * 0.25;
+            enemy.buffed = true;
+          }
+          const damage = Math.max(1, Math.floor(attackPower) - getTotalDefense());
+          totalDamage += damage;
+          attackerCount++;
+        }
+        renderEnemy(enemy);
+      });
+      if (multiBossCount > 0 && contactedEnemies.length > 0) {
+        const extraDamage = multiBossCount * contactedEnemies.length * 2;
+        totalDamage += extraDamage;
+        attackerCount += multiBossCount;
+        document.getElementById("battleLog").textContent = "ボスの群れ攻撃！";
+        addCombatLog("ボスの群れ攻撃！" + extraDamage + "ダメージ", "enemy");
+      }
+      if (totalDamage > 0) {
+        currentPlay.heroHp -= totalDamage;
+        document.getElementById("battleLog").textContent = attackerCount + "体の敵が一斉攻撃！ -" + totalDamage + "HP";
+        addCombatLog(attackerCount + "体の敵の一斉攻撃！-" + totalDamage + "ダメージ", "enemy");
+      }
+    }
+
+    function defeatEnemy(enemy) {
+      const exists = currentPlay.enemies.some(function(item) { return item.id === enemy.id; });
+      if (!exists) return;
+      const rewardGold = Math.floor(enemy.gold * getGoldMultiplier());
+      currentPlay.point += enemy.point;
+      gameState.gold += rewardGold;
+      gameState.soul += 1;
+      addCombatLog(enemy.name + "を撃破！+" + enemy.point + "P, +" + rewardGold + "G", "damage");
+      removeEnemyElement(enemy);
+      currentPlay.enemies = currentPlay.enemies.filter(function(item) { return item.id !== enemy.id; });
+      addExperience(enemy.experience);
+      if (currentPlay.enemies.length === 0) {
+        currentPlay.stageNumber++;
+        if (currentPlay.stageInArea >= 3) {
+          currentPlay.stageInArea = 1;
+          currentPlay.areaNumber++;
+        } else {
+          currentPlay.stageInArea++;
+        }
+        for (let i = 0; i < 3; i++) spawnEnemy("first", i * 70);
+      }
+      saveGame();
+      updateGameDisplay();
+    }
+
+    function updateGameTime(deltaSeconds) {
+      currentPlay.gameSecondProgress += deltaSeconds;
+      while (currentPlay.gameSecondProgress >= 1) {
+        currentPlay.gameSecondProgress -= 1;
+        currentPlay.stageTime--;
+        increaseAge();
+        if (currentPlay.stageTime <= 0) {
+          currentPlay.stageTime = 30;
+          currentPlay.point += 100;
+          document.getElementById("battleLog").textContent = getStageLabel() + "へ進んだ！";
+        }
+      }
+    }
+
+    function updateDistance(deltaSeconds) {
+      const hasContactingEnemy = currentPlay.enemies.some(function(enemy) { return enemy.contacted; });
+      if (hasContactingEnemy) return;
+      currentPlay.distanceProgress += deltaSeconds;
+      while (currentPlay.distanceProgress >= 1) {
+        currentPlay.distanceProgress -= 1;
+        currentPlay.distance++;
+        currentPlay.point++;
+        if (currentPlay.distance > 0 && currentPlay.distance % 5 === 0) {
+          gameState.soul++;
+          saveGame();
+        }
+      }
+    }
+
+    function gameTick(deltaSeconds) {
+      if (!currentPlay.isPlaying) return;
+      updateGameTime(deltaSeconds);
+      updateDistance(deltaSeconds);
+      updateSkill(deltaSeconds);
+      currentPlay.companions.forEach(function(companion) {
+        updateCompanionSkill(companion, deltaSeconds);
+        companionAttack(companion, deltaSeconds);
+      });
+      if (currentPlay.pet) petAttack(currentPlay.pet, deltaSeconds);
+      heroAttack(deltaSeconds);
+      enemyAttackAll(deltaSeconds);
+      if (currentPlay.heroHp <= 0) {
+        currentPlay.heroHp = 0;
+        endGame("戦闘で力尽きた");
+        return;
+      }
+      if (currentPlay.age >= 70) {
+        endGame("70 歳で人生終了");
+        return;
+      }
+      updateGameDisplay();
+    }
+
+    function animationLoop(timestamp) {
+      if (!currentPlay.isPlaying) return;
+      const deltaSeconds = Math.min((timestamp - currentPlay.lastFrameTime) / 1000, 0.1);
+      currentPlay.lastFrameTime = timestamp;
+      moveEnemies(deltaSeconds);
+      updateEnemySpawning(deltaSeconds);
+      gameTick(deltaSeconds);
+      currentPlay.animationId = window.requestAnimationFrame(animationLoop);
+    }
+
+    function updateGameDisplay() {
+      const job = JOBS[currentPlay.jobKey];
+      document.getElementById("gameJob").textContent = currentPlay.jobIcon + " " + currentPlay.jobName;
+      document.getElementById("gameEnemyCount").textContent = currentPlay.enemies.length + "体";
+      document.getElementById("gameAge").textContent = currentPlay.age + "歳";
+      document.getElementById("gameLevel").textContent = currentPlay.level;
+      document.getElementById("gameStage").textContent = getStageLabel();
+      document.getElementById("gameDistance").textContent = currentPlay.distance + "m";
+      document.getElementById("gameHp").textContent = currentPlay.heroHp + "/" + currentPlay.heroMaxHp;
+      document.getElementById("gameExp").textContent = currentPlay.experience + "/" + currentPlay.nextExperience;
+      document.getElementById("gameGold").textContent = gameState.gold;
+      document.getElementById("gameSoul").textContent = gameState.soul;
+      const heroHpPercent = Math.max(0, currentPlay.heroHp / currentPlay.heroMaxHp * 100);
+      const expPercent = Math.max(0, currentPlay.experience / currentPlay.nextExperience * 100);
+      const skillPercent = currentPlay.enemies.length === 0 ? 0 : currentPlay.skillProgress * 100;
+      document.getElementById("heroHpBar").style.width = heroHpPercent + "%";
+      document.getElementById("expFill").style.width = expPercent + "%";
+      document.getElementById("expNumber").textContent = currentPlay.experience + " / " + currentPlay.nextExperience;
+      document.getElementById("skillName").textContent = job.skillName;
+      document.getElementById("skillFill").style.width = skillPercent + "%";
+      document.getElementById("timerBar").style.width = currentPlay.stageTime / 30 * 100 + "%";
+      document.getElementById("timerValue").textContent = currentPlay.stageTime + "秒";
+      updateEquipmentDisplay();
+      updateHeroAppearance();
+      currentPlay.companions.forEach(function(companion) { updateCompanionAppearance(companion); });
+      if (currentPlay.pet) updatePetAppearance(currentPlay.pet);
+      currentPlay.enemies.forEach(function(enemy) { renderEnemy(enemy); });
+    }
+
+    function calculateSoulReward() {
+      return Math.max(2, Math.floor(currentPlay.distance / 5));
+    }
+
+    function stopGameLoop() {
+      currentPlay.isPlaying = false;
+      if (currentPlay.animationId !== null) {
+        window.cancelAnimationFrame(currentPlay.animationId);
+        currentPlay.animationId = null;
+      }
+    }
+
+    function clearEnemies() {
+      currentPlay.enemies.forEach(function(enemy) { removeEnemyElement(enemy); });
+      currentPlay.enemies = [];
+    }
+
+    function clearCompanions() {
+      currentPlay.companions.forEach(function(companion) { removeCompanionElement(companion); });
+      currentPlay.companions = [];
+    }
+
+    function clearPet() {
+      if (currentPlay.pet) {
+        removePetElement(currentPlay.pet);
+        currentPlay.pet = null;
+      }
+    }
+
+    function endGame(reason) {
+      if (!currentPlay.isPlaying) return;
+      stopGameLoop();
+      const lifeNumber = gameState.life;
+      const earnedGold = Math.floor(currentPlay.distance / 100);
+      const earnedSoul = calculateSoulReward();
+      gameState.life++;
+      gameState.gold += earnedGold;
+      gameState.soul += earnedSoul;
+      if (currentPlay.distance > gameState.bestDistance) gameState.bestDistance = currentPlay.distance;
+      if (currentPlay.point > gameState.bestPoint) gameState.bestPoint = currentPlay.point;
+      saveGame();
+      document.getElementById("resultTitle").textContent = reason;
+      document.getElementById("resultSoul").textContent = "魂 +" + earnedSoul;
+      document.getElementById("resultLife").textContent = lifeNumber + "回目";
+      document.getElementById("resultAge").textContent = currentPlay.age + "歳";
+      document.getElementById("resultStage").textContent = getStageLabel();
+      document.getElementById("resultDistance").textContent = currentPlay.distance + "m";
+      document.getElementById("resultPoint").textContent = currentPlay.point;
+      document.getElementById("resultGold").textContent = earnedGold;
+      clearEnemies();
+      clearCompanions();
+      clearPet();
+      updateTitleDisplay();
+      updateSoulScreen();
+      switchScreen("resultScreen");
+    }
+
+    window.addEventListener("load", init);
   </script>
 </body>
 </html>
